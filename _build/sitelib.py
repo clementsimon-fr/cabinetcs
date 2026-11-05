@@ -1,4 +1,4 @@
-import os, urllib.parse, shutil
+import os, urllib.parse, shutil, hashlib
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 MAIL = "clement.simon@cabinetcs.fr"
 TEL = "06 77 30 01 27"
@@ -90,6 +90,9 @@ def footer():
   </div>
 </footer>'''
 
+def ver(f):
+    return hashlib.md5(open(ROOT + f, "rb").read()).hexdigest()[:8]
+
 def page(path, title, desc, active, body, noindex=False):
     canon = "https://cabinetcs.fr" + path
     robots = '<meta name="robots" content="noindex">\n' if noindex else ''
@@ -113,8 +116,8 @@ def page(path, title, desc, active, body, noindex=False):
 <link rel="apple-touch-icon" href="/assets/logo.png">
 <link rel="preload" href="/assets/fonts/Inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/inter.css">
-<link rel="stylesheet" href="/assets/site.css">
-<script src="/assets/site.js" defer></script>
+<link rel="stylesheet" href="/assets/site.css?v={ver('/assets/site.css')}">
+<script src="/assets/site.js?v={ver('/assets/site.js')}" defer></script>
 </head>
 <body>
 {header(active)}
