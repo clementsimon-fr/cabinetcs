@@ -1,189 +1,229 @@
-import os, sys, shutil
-sys.path.insert(0, os.path.dirname(__file__))
+"""Contenu des pages du site cabinetcs.fr. Lancer : python3 pages.py"""
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from sitelib import *  # noqa
 
-# ================= ACCUEIL =================
-offers_cards = ""
-OFFER_TEXT = {
- "individuel": ("On part de ce que vous vivez : une décision, une prise de poste, une transition, une tension. Votre actualité fait l’ordre du jour.", ["Manager", "Collaborateur", "Indépendant", "Leader émergent"]),
- "equipe": ("J’anime le processus pour que le groupe avance sur le fond : clarifier un cap commun, mieux travailler ensemble, traverser une tension.", ["Équipe en tension", "CODIR", "Projet transversal"]),
- "dirigeants": ("Un espace pour déposer la charge et décider avec clarté, et un espace pour enrichir vos repères de dirigeant.", ["Dirigeant", "Fondateur", "Associés"]),
-}
-for s,t,img,d in OFFERS:
-    txt, who = OFFER_TEXT[s]
-    offers_cards += f'''<article class="offer"><div class="pic"><img src="{img}" alt="" loading="lazy"></div><div class="body"><p class="kicker">{d.split(" : ")[0] if " : " in d else d}</p><h3><a href="/accompagnements/{s}/">{t}</a></h3><p>{txt}</p><div class="for">{"".join(f"<span>{w}</span>" for w in who)}</div><span class="link-arrow">Découvrir {ic("arrow")}</span></div></article>'''
+ENGAGEMENTS = ["Confidentialité totale", "Neutralité bienveillante", "Respect du rythme", "Finalité d’autonomie"]
+
+# ---------------------------------------------------------------- Situations types
+SIT_IND = [
+ ("Prise de poste d’un manager",
+  "Un technicien est promu responsable de l’équipe dont il faisait partie.",
+  "L’entreprise souhaite l’aider à prendre sa place de manager.",
+  "Clarifier son rôle, préparer les premiers entretiens individuels, définir ce qu’il délègue.",
+  "Des réunions d’équipe régulières et deux dossiers délégués après quatre mois."),
+ ("Responsable en surcharge",
+  "Une responsable de service de quinze personnes cumule son poste et l’intérim d’un collègue depuis un an.",
+  "La direction des ressources humaines veut l’aider à retrouver une charge tenable.",
+  "Hiérarchiser les priorités, identifier ce qui peut être délégué ou refusé, préparer l’échange avec sa direction.",
+  "Une répartition des dossiers revue avec sa direction et un temps de recul planifié chaque semaine."),
+ ("Passage à un rôle transverse",
+  "Un ingénieur passe d’un poste d’expert à un poste de chef de projet transverse, sans autorité hiérarchique.",
+  "Gagner en influence auprès des services concernés.",
+  "Cartographier les acteurs, préparer les réunions clés, travailler sa posture en situation de désaccord.",
+  "Un comité de pilotage installé et des arbitrages obtenus plus rapidement."),
+]
+SIT_COL = [
+ ("Équipe divisée",
+  "Après le départ de son responsable, une équipe de huit personnes s’est scindée en deux groupes.",
+  "Le directeur veut rétablir un fonctionnement collectif.",
+  "Des séances de régulation pour exprimer les désaccords, la clarification des rôles, des règles de fonctionnement écrites ensemble.",
+  "Des réunions d’équipe de nouveau tenues et un responsable intérimaire reconnu par tous."),
+ ("Fusion de deux équipes",
+  "Deux équipes techniques sont regroupées après une réorganisation, avec des méthodes différentes.",
+  "Construire un fonctionnement commun.",
+  "Des ateliers sur les pratiques de chacun, le choix d’outils et de rituels communs, un point d’étape chaque trimestre.",
+  "Un processus commun adopté et une seule réunion d’équipe au lieu de deux."),
+ ("Comité de direction",
+  "Dans un comité de direction de six personnes, chacun défend d’abord son service.",
+  "Le directeur général veut que le comité décide ensemble.",
+  "Clarifier le rôle du comité, fixer des règles de décision, travailler une vision à trois ans.",
+  "Un ordre du jour structuré et des décisions prises en séance."),
+]
+SIT_DIR = [
+ ("Dirigeant de TPE en surcharge",
+  "Le dirigeant d’une entreprise de douze salariés traite seul toutes les décisions.",
+  "Retrouver du temps pour développer l’entreprise.",
+  "Trier ce qui relève de lui, organiser la délégation à son adjoint.",
+  "Une demi-journée par semaine consacrée à la stratégie."),
+ ("Préparer une cession",
+  "Un dirigeant prépare la cession de sa PME après quinze ans à sa tête.",
+  "Préparer l’après, pour l’entreprise et pour lui.",
+  "Clarifier ce qu’il veut transmettre, ses conditions et son projet personnel.",
+  "Un calendrier de cession et un projet post-cession défini."),
+ ("Indépendante à l’activité dispersée",
+  "Une consultante indépendante depuis deux ans multiplie les types de missions.",
+  "Choisir où concentrer son énergie.",
+  "Clarifier son offre et ses priorités à partir de ce qui compte pour elle.",
+  "Une offre resserrée sur deux prestations."),
+ ("Associés en désaccord",
+  "Deux associés d’une PME ne s’accordent pas sur la stratégie de croissance.",
+  "Retrouver une décision commune.",
+  "Des séances à deux, la clarification des attentes de chacun, des règles de décision entre associés.",
+  "Un plan de développement validé par les deux associés."),
+]
+
+# ================================================================ ACCUEIL
+def door(img, kicker, title, text, links, cta_url, cta_label):
+    l = "".join(f'<li><a href="{u}">{ic("arrow")}<span><b>{t}</b>{d}</span></a></li>' for u,t,d in links)
+    return f'''<article class="door2"><div class="pic"><img src="{img}" alt="" loading="lazy"></div><div class="body"><p class="kicker">{kicker}</p><h3>{title}</h3><p>{text}</p><ul class="door-links">{l}</ul><a class="btn ghost sm" href="{cta_url}">{cta_label} {ic("arrow")}</a></div></article>'''
 
 home = f'''<section class="hero"><div class="wrap home-hero">
   <div class="txt">
     <p class="kicker">Coach professionnel certifié · Bourgoin-Jallieu</p>
     <h1>Prendre du recul sur votre situation professionnelle et faire un pas en avant</h1>
-    <p class="lead">J’accompagne des dirigeants, des cadres, des managers, des indépendants et des équipes, en individuel ou en collectif, sur ce qui se joue pour eux dans leur activité : une décision, une organisation, une relation, un cap à clarifier.</p>
-    <div class="btns"><a class="btn" href="/contact/">Prendre rendez-vous {ic("arrow")}</a><a class="btn ghost" href="#accompagnements">Voir les accompagnements</a></div>
-    <p class="facts"><span>{ic("clock")}Séance découverte de 30 min offerte</span><span>{ic("pin")}Au cabinet, en visio ou dans votre structure</span></p>
+    <p class="lead">J’accompagne les organisations, leurs managers et leurs équipes, ainsi que les dirigeants et les entrepreneurs qui ont besoin d’un espace pour penser et décider avec clarté.</p>
+    <div class="btns"><a class="btn" href="/contact/">Prendre rendez-vous {ic("arrow")}</a><a class="btn ghost" href="#offres">Voir les accompagnements</a></div>
+    <p class="facts"><span>{ic("clock")}Rendez-vous découverte de 30 min offert</span><span>{ic("pin")}Au cabinet, en visio ou dans vos locaux</span></p>
   </div>
   <figure class="portrait"><img src="/assets/portrait.jpg" alt="Portrait de Clément Simon" width="640" height="804"><figcaption><b>Clément Simon</b>Coach professionnel certifié, fondateur du Cabinet CS</figcaption></figure>
 </div></section>
 '''
-home += sec("accompagnements", f'<div class="offers">{offers_cards}</div>', kicker="Mes accompagnements", h2="Trois façons de travailler ensemble", sub="Choisissez l’accompagnement qui correspond à votre situation. En cas de doute, la séance découverte sert justement à en parler.")
-themes = [("user","Le rapport à soi","Confiance, légitimité, alignement."),("users","Le rapport aux autres","Communication, leadership, gestion des tensions."),("compass","La vision","Clarifier ses priorités, donner du sens à ses actions."),("zap","Les difficultés","Blocages, surcharge, décisions complexes."),("flag","La posture","Trouver sa place, assumer son rôle."),("balance","L’équilibre","Articuler vie professionnelle et vie personnelle.")]
-home += sec("themes", '<div class="themes">' + "".join(f'<div class="card"><span class="chip-ic">{ic(i)}</span><h3>{t}</h3><p>{d}</p></div>' for i,t,d in themes) + '</div>', cls="alt", kicker="Ce qui amène les personnes", h2="Ce qu’on travaille en séance")
-home += sec("demarche", '''<ol class="steps"><li><h3>Accueillir</h3><p>Comment ça va ? Qu’est-ce qui vous occupe en ce moment ?</p></li><li><h3>Explorer</h3><p>On choisit ensemble un sujet et on le travaille.</p></li><li><h3>Avancer</h3><p>Vous repartez avec un pas concret dans votre situation.</p></li></ol>''' + duo("Le coach","expert du processus","Alliance et confiance","Vous","expert de votre situation") + '<div style="margin-top:24px">' + tags(["Confidentialité totale","Neutralité bienveillante","Respect du rythme","Finalité d’autonomie"], True) + '</div>', kicker="Comment ça se passe", h2="On part de là où vous en êtes", sub="Un espace neutre, confidentiel et sans jugement. Vous arrivez avec ce que vous avez : une situation, un besoin, un objectif.")
-home += sec("structures", cards_row([("target","Les objectifs","Nous les définissons ensemble au départ, avec vous et avec la personne ou l’équipe accompagnée."),("clock","Le format","Nombre de séances, rythme et lieu : au cabinet, en visio ou dans vos locaux."),("shield","Un contrat à trois","Quand la structure prescrit l’accompagnement, un contrat tripartite précise ce qui est partagé avec elle, et ce qui reste confidentiel entre la personne et moi."),("building","Pour vos cadres et vos équipes","En individuel pour vos cadres et dirigeants, en collectif pour vos équipes, comités et groupes de projet.")]) + '<p class="center" style="text-align:center;margin-top:28px"><a class="link-arrow" href="/accompagnements/">Comparer les accompagnements ' + ic("arrow") + '</a></p>', cls="alt", kicker="Vous êtes une entreprise ou une structure", h2="Accompagner vos cadres et vos équipes")
-home += sec("situations", DISCLAIMER + situations([
- ("Dirigeant, TPE du bâtiment","Il arrive sceptique. Après trois mois, il décide différemment : il tranche plus vite et s’excuse moins.","Le coach ne donne pas de réponses ; il pose les questions qui l’aident à trouver la sienne."),
- ("Fondatrice, startup tech","Dix idées, aucun client. L’accompagnement l’aide non pas à trouver de nouvelles idées, mais à choisir.","Son offre finit par tenir en une phrase."),
- ("Manager, SI / IT","Une période difficile, l’épuisement tout proche, l’envie de tout quitter.","Elle sépare ce qui relève du contexte de ce qui relève d’elle, puis choisit un poste qui lui ressemble."),
- ("Responsable associatif","Il donne sans compter, jusqu’à vider le réservoir.","Le temps de ressourcement l’aide à redéfinir ses limites, sans culpabilité.")]), kicker="Situations types", h2="Ce qui peut changer", narrow=True)
-home += sec("qui", f'''<div class="teaser"><img src="/assets/portrait.jpg" alt="" width="200" height="200"><div class="t"><p class="kicker">Qui je suis</p><h2 id="h-qui">Clément Simon</h2><p>Ingénieur de formation, je suis devenu coach professionnel parce que ce qui m’a toujours intéressé, c’est ce qui se joue entre les personnes quand une situation devient difficile. Certifié par l’école JBS Coaching, dans la culture Coach &amp; Team.</p><p><a class="link-arrow" href="/a-propos/">Mon parcours et ma pratique {ic("arrow")}</a></p></div></div>''', cls="alt")
+doors = '<div class="doors2">' + door("/assets/img/equipe.jpg", "Pour les organisations", "Accompagner vos managers et vos équipes",
+  "Entreprises, associations, collectivités : vous souhaitez accompagner une personne ou un collectif. Les objectifs sont définis avec vous, dans un contrat à trois.",
+  [(ORG_IND[0], "Coaching individuel", "Un manager, un cadre, un collaborateur"), (ORG_COL[0], "Coaching collectif", "Une équipe, un comité de direction, un groupe projet")],
+  "/organisations/", "Travailler avec votre organisation") + door("/assets/img/olivier.jpg", "Pour les dirigeants et entrepreneurs", "Sous l’Olivier, un espace de ressourcement",
+  "Dirigeant, fondateur, indépendant ou associé : vous venez pour vous-même. Un espace confidentiel pour déposer la charge, prendre du recul et décider avec clarté.",
+  [(DIR[0] + "#travail", "Ce qu’on y travaille", "Posture, décisions, équilibre, vision"), (DIR[0] + "#format", "Le format", "Séances d’1 h 30, sur 3, 6 ou 9 mois")],
+  DIR[0], "Découvrir Sous l’Olivier") + '</div>'
+home += sec("offres", doors, kicker="Deux portes d’entrée", h2="Qui vous sollicite ?", sub="Une organisation qui souhaite accompagner ses équipes, ou un dirigeant qui vient pour lui-même : le cadre de travail n’est pas le même.")
+home += sec("demarche", '''<ol class="steps"><li><h3>Rendez-vous découverte</h3><p>30 minutes offertes, en visio ou en présentiel, pour clarifier votre situation et votre besoin.</p></li><li><h3>Contrat d’accompagnement</h3><p>Objectifs, rythme et lieu définis ensemble. Quand une organisation prescrit, un contrat à trois précise ce qui reste confidentiel.</p></li><li><h3>Séances et bilans</h3><p>Des séances d’1 h 30 sur 3, 6 ou 9 mois, avec un bilan toutes les 4 à 6 séances.</p></li></ol>''' + duo("Le coach","expert du processus","Alliance et confiance","Vous","expert de votre situation") + '<div style="margin-top:24px">' + tags(ENGAGEMENTS, True) + '</div>', cls="alt", kicker="Ma façon de travailler", h2="Un cadre clair, une démarche simple")
+home += sec("qui", f'''<div class="teaser"><img src="/assets/portrait.jpg" alt="" width="200" height="200"><div class="t"><p class="kicker">Qui je suis</p><h2 id="h-qui">Clément Simon</h2><p>Ingénieur de formation, je suis devenu coach professionnel parce que ce qui m’a toujours intéressé, c’est ce qui se joue entre les personnes quand une situation devient difficile. Certifié par l’école JBS Coaching, dans la culture Coach &amp; Team.</p><p><a class="link-arrow" href="/a-propos/">Mon parcours et ma pratique {ic("arrow")}</a></p></div></div>''')
 faq = [("Coaching ou thérapie : quelle différence ?","La thérapie prend soin d’une souffrance psychique et explore souvent le passé. Le coaching part de votre situation actuelle et de ce que vous voulez faire avancer. Si votre besoin relève d’un soin, je vous oriente vers un professionnel de santé."),
-("Ce que le coaching n’est pas","Ce n’est pas du conseil : je ne fais pas d’audit et je ne décide pas à votre place. Ce n’est pas non plus une thérapie. C’est un espace pour voir plus clair et choisir vous-même."),
-("Combien de séances faut-il ?","Un accompagnement s’engage sur 3, 6 ou 9 mois, avec des séances d’1 h 30 toutes les 2 à 4 semaines et un bilan toutes les 4 à 6 séances. La séance découverte permet de voir ensemble ce qui vous convient."),
-("Où se passent les séances ?","Au cabinet à Bourgoin-Jallieu, en visio, ou dans les locaux de votre structure."),
-("Et si mon besoin dépasse le coaching ?","Je vous oriente vers une personne de confiance de mon réseau : santé, juridique ou question technique.")]
-home += sec("faq", '<div class="faq">' + "".join(f'<details class="more"><summary><b>{q}</b></summary><p class="det">{a}</p></details>' for q,a in faq) + '</div>', kicker="Questions fréquentes", h2="Ce qu’on me demande souvent", narrow=True)
+("Combien de séances faut-il ?","Un accompagnement s’engage sur 3, 6 ou 9 mois, avec des séances d’1 h 30 toutes les 2 à 4 semaines. Le rendez-vous découverte permet de voir ensemble ce qui vous convient."),
+("Qu’est-ce qui reste confidentiel ?","Le contenu des séances reste entre la personne accompagnée et moi. Quand une organisation prescrit l’accompagnement, le contrat à trois précise dès le départ ce qui lui est partagé : en général les objectifs et les bilans, jamais le contenu des échanges.")]
+home += sec("faq", '<div class="faq">' + "".join(f'<details class="more"><summary><b>{q}</b></summary><p class="det">{a}</p></details>' for q,a in faq) + '</div>', cls="alt", kicker="Questions fréquentes", h2="Ce qu’on me demande souvent", narrow=True)
 home += cta_band()
-page("/", "Cabinet CS · Clément Simon, coach professionnel à Bourgoin-Jallieu", "Cabinet CS, Clément Simon, coach professionnel certifié à Bourgoin-Jallieu : coaching individuel, coaching d’équipe et accompagnement des dirigeants. Séance découverte de 30 minutes offerte.", "home", home)
+page("/", "Cabinet CS · Clément Simon, coach professionnel à Bourgoin-Jallieu", "Cabinet CS, Clément Simon, coach professionnel certifié à Bourgoin-Jallieu : coaching individuel et collectif pour les organisations, espace de ressourcement Sous l’Olivier pour les dirigeants et entrepreneurs.", "home", home)
 
-# ================= ACCOMPAGNEMENTS (hub) =================
-hub = f'''<section class="hero"><div class="wrap">
-<nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a><span aria-hidden="true">›</span><span aria-current="page">Accompagnements</span></nav>
-<div class="page-hero"><p class="kicker">Accompagnements</p><h1>Quel accompagnement pour vous ?</h1><p class="lead">Trois formats, une même démarche : partir de votre situation réelle pour avancer concrètement, dans un cadre confidentiel.</p></div>
-</div></section>
+# ================================================================ ORGANISATIONS (vue d'ensemble)
+org = f'''<section class="hero"><div class="wrap">{crumbs([("Organisations", None)])}
+<div class="page-hero"><p class="kicker">Pour les organisations</p><h1>Accompagner vos managers et vos équipes</h1><p class="lead">Entreprises, associations, collectivités : j’interviens à votre demande, en individuel pour vos managers et vos cadres, en collectif pour vos équipes et vos comités.</p>
+<div class="btns"><a class="btn" href="/contact/">Échanger sur votre besoin {ic("arrow")}</a></div></div></div></section>
 '''
-choose = [("Vous voulez avancer sur votre situation professionnelle","prise de poste, décision, transition, posture","individuel","Coaching individuel"),
-("Vous voulez faire avancer un collectif","équipe en tension, comité de direction, fusion, projet transversal","equipe","Coaching d’équipe"),
-("Vous dirigez une entreprise ou vous l’avez créée","solitude de la décision, surcharge, cession, transmission","dirigeants","Dirigeants & entrepreneurs")]
-hub += sec("offres", f'<div class="offers">{offers_cards}</div><div class="choose">' + "".join(f'<a href="/accompagnements/{s}/"><span><b>{a}</b> : {b}</span><span class="link-arrow">{t} {ic("arrow")}</span></a>' for a,b,s,t in choose) + '</div>', kicker="Comment choisir", h2="Trouver le bon format")
-hub += sec("commun", '<ol class="steps"><li><h3>Rendez-vous découverte</h3><p>30 minutes offertes, en visio ou en présentiel, pour clarifier votre vision, le sens de votre démarche et votre besoin.</p></li><li><h3>Contrat d’accompagnement</h3><p>Nous définissons ensemble les objectifs, le rythme, le lieu et, si une structure prescrit, un contrat à trois.</p></li><li><h3>Séances et bilans</h3><p>Des séances d’1 h 30 sur 3, 6 ou 9 mois, avec des bilans réguliers pour ajuster le cap.</p></li></ol>', cls="alt", kicker="Dans tous les cas", h2="Comment ça démarre")
-hub += cta_band()
-page("/accompagnements/", "Accompagnements · Cabinet CS", "Coaching individuel, coaching d’équipe ou accompagnement des dirigeants : trouvez l’accompagnement adapté à votre situation. Cabinet CS, Bourgoin-Jallieu.", "acc", hub)
+def org_card(o, text, who):
+    u,t,img,d = o
+    return f'<article class="offer"><div class="pic"><img src="{img}" alt="" loading="lazy"></div><div class="body"><p class="kicker">{d}</p><h3><a href="{u}">{t}</a></h3><p>{text}</p><div class="for">{"".join(f"<span>{w}</span>" for w in who)}</div><span class="link-arrow">Découvrir {ic("arrow")}</span></div></article>'
+org += sec("offres", '<div class="offers two">' + org_card(ORG_IND, "Un accompagnement sur mesure pour une personne : prise de poste, changement de rôle, posture managériale, décision.", ["Manager en prise de poste","Cadre en transition","Leader émergent"]) + org_card(ORG_COL, "J’anime le processus pour que le groupe avance sur le fond : clarifier un cap commun, mieux travailler ensemble, traverser une tension.", ["Équipe en tension","Comité de direction","Projet transversal","Équipe en croissance"]) + '</div>', kicker="Deux formats", h2="Individuel ou collectif")
+org += sec("cadre", cards_row([("target","Les objectifs","Nous les définissons ensemble au départ, avec vous et avec la personne ou l’équipe accompagnée."),("clock","Le format","Nombre de séances, rythme et lieu : au cabinet, en visio ou dans vos locaux."),("shield","Un contrat à trois","Il précise ce qui est partagé avec l’organisation (objectifs, bilans) et ce qui reste confidentiel entre la personne et moi."),("clipboard","Des bilans réguliers","Un point d’étape toutes les 4 à 6 séances, et un bilan final partagé avec vous.")]), cls="alt", kicker="Comment je travaille avec une organisation", h2="Un cadre posé dès le départ")
+org += cta_band(title="Parlons de votre besoin", text="Un premier échange, offert, pour comprendre votre situation et construire ensemble le cadre de l’accompagnement.")
+page("/organisations/", "Pour les organisations · Coaching individuel et collectif · Cabinet CS", "Coaching individuel des managers et coaching collectif des équipes pour les entreprises, associations et collectivités. Cabinet CS, Clément Simon, Bourgoin-Jallieu.", "org", org)
 
-# ================= COACHING INDIVIDUEL =================
+# ================================================================ COACHING INDIVIDUEL
 lv = '<ol class="levels">' + "".join(f'<li><span>{7-i}</span><b>{l}</b></li>' for i,l in enumerate(["Identité","Valeurs et croyances","Capacités","Comportements","Stratégies","Objectifs","Environnement"])) + '</ol>'
-ind = offer_hero("Coaching individuel", "/assets/img/collaborateur.jpg", "", "Coaching individuel", "Accompagner un collaborateur", "Un accompagnement sur mesure pour les collaborateurs, managers et indépendants qui veulent développer leur potentiel et avoir un impact positif dans leur organisation.", "Coaching individuel", [("intention","L’intention"),("pour-qui","Pour qui ?"),("approche","Mon approche"),("formes","Les formes"),("concretement","Concrètement"),("situations","Situations types")])
-ind += sec("intention", '<div class="prose"><p>Le coaching individuel est un accompagnement professionnel qui s’appuie sur vos besoins pour développer votre savoir-faire et vos potentiels. Il vise avant tout à accroître votre <strong>puissance personnelle</strong> et votre capacité à décider dans des environnements complexes, à forts enjeux.</p><p class="pull">« Un coaching qui travaille la posture autant que la performance, pour des résultats durables. »</p></div>', cls="alt", h2="L’intention", center=False, narrow=True)
-ind += sec("pour-qui", cards_row([("users","Managers en prise de poste","Asseoir sa légitimité, clarifier sa posture et fédérer son équipe dès les premiers mois."),("target","Collaborateurs en transition","Prendre du recul sur un changement de rôle, un conflit, une perte de repères."),("star","Leaders émergents","Développer un leadership authentique, aligné avec ses valeurs et les besoins de l’organisation."),("shield","Dirigeants sous pression","Retrouver de la clarté et de l’espace mental dans un quotidien exigeant.")]), h2="Pour qui ?", narrow=True)
+ind = offer_hero([("Organisations","/organisations/"),("Coaching individuel",None)], ORG_IND[2], "Pour les organisations", "Coaching individuel", "Accompagner un manager, un cadre, un collaborateur", "Un accompagnement sur mesure pour développer le potentiel d’une personne et son impact dans votre organisation.", [("intention","L’intention"),("pour-qui","Pour qui ?"),("approche","Mon approche"),("formes","Les formes"),("concretement","Concrètement"),("situations","Situations types")])
+ind += sec("intention", '<div class="prose"><p>Le coaching individuel est un accompagnement professionnel qui s’appuie sur les besoins de la personne pour développer son savoir-faire et ses potentiels. Il vise avant tout à accroître sa <strong>puissance personnelle</strong> et sa capacité à décider dans des environnements complexes, à forts enjeux.</p><p class="pull">« Un coaching qui travaille la posture autant que la performance, pour des résultats durables. »</p></div>', cls="alt", h2="L’intention", center=False, narrow=True)
+ind += sec("pour-qui", '<div class="grid3">' + "".join(f'<div class="card"><span class="chip-ic">{ic(i)}</span><h3>{t}</h3><p>{d}</p></div>' for i,t,d in [("users","Managers en prise de poste","Asseoir sa légitimité, clarifier sa posture et fédérer son équipe dès les premiers mois."),("target","Cadres en transition","Prendre du recul sur un changement de rôle, un conflit, une perte de repères."),("star","Leaders émergents","Développer un leadership authentique, aligné avec ses valeurs et les besoins de l’organisation.")]) + '</div>', h2="Pour qui ?")
 ind += sec("approche", pillars([
- ("target","Une finalité d’autonomie durable","Plutôt que de vous apporter une solution toute faite, je vous accompagne pour construire la vôtre : c’est la métaphore de la « canne à pêche ». Le changement vient d’abord de vos propres ressources."),
- ("shield","Un espace-ressource privilégié","Un cadre pour vous extraire de la pression opérationnelle, prendre du recul et réfléchir sereinement aux enjeux de moyen et long terme. Confidentialité totale et cadre clair dans le temps et dans l’espace."),
- ("zap","Le moteur du changement : l’énaction","Ce que vous vivez pendant nos échanges devient le terrain où émergent vos nouveaux comportements et compétences. En agissant et en pensant par vous-même, vous nourrissez votre propre croissance."),
- ("layers","Une réponse adaptée à chaque situation","Le coaching se décline selon votre besoin : développement, résolution, transition, performance, décision. Il existe aussi des coachings de crise, de soutien ou de guidance."),
- ("usercheck","Ma posture de coach","Je m’adresse à vous comme à une personne en croissance, capable de coopérer et de résoudre ses propres problèmes. Mon rôle : mettre en lumière vos marges d’action, tout en vous offrant un cadre sûr face à l’incertitude.")]), cls="alt", h2="Ce qui définit mon coaching", sub="Cinq piliers pour un accompagnement rigoureux et humain.", narrow=True)
+ ("target","Une finalité d’autonomie durable","Plutôt que d’apporter une solution toute faite, j’accompagne la personne pour construire la sienne. Le changement vient d’abord de ses propres ressources."),
+ ("shield","Un espace-ressource privilégié","Un cadre pour sortir de la pression opérationnelle, prendre du recul et réfléchir aux enjeux de moyen et long terme. Confidentialité totale et cadre clair dans le temps et dans l’espace."),
+ ("zap","Le moteur du changement : l’énaction","Ce qui est vécu pendant nos échanges devient le terrain où émergent de nouveaux comportements et compétences. En agissant et en pensant par elle-même, la personne nourrit sa propre croissance."),
+ ("layers","Une réponse adaptée à chaque situation","Le coaching se décline selon le besoin : développement, résolution, transition, performance, décision."),
+ ("usercheck","Ma posture de coach","Je m’adresse à la personne comme à quelqu’un en croissance, capable de coopérer et de résoudre ses propres problèmes. Mon rôle : mettre en lumière ses marges d’action, dans un cadre sûr face à l’incertitude.")]), cls="alt", h2="Ce qui définit mon coaching", sub="Cinq piliers pour un accompagnement rigoureux et humain.", narrow=True)
 ind += sec("formes", mores([
- ("Coaching de développement","Pour changer de posture","Vous évoluez dans votre rôle et devez adapter votre posture managériale. Le coaching de développement vous accompagne dans cette montée en maturité professionnelle, pour incarner pleinement votre nouvelle responsabilité."),
- ("Coaching de résolution","Pour débloquer une situation","Vous faites face à une situation complexe : conflit, impasse relationnelle, blocage opérationnel. Le coaching de résolution vous aide à trouver une issue constructive en explorant de nouvelles perspectives."),
- ("Coaching de transition","Pour préparer votre avenir","Changement de poste, de fonction, de secteur ou de vie professionnelle : le coaching de transition vous accompagne dans ces moments charnières pour prendre les bonnes décisions avec sérénité."),
- ("Coaching de performance","Pour acquérir des compétences nouvelles","Vous souhaitez renforcer des compétences précises : communication, leadership, gestion du temps, prise de parole. Le coaching de performance vise des objectifs concrets et mesurables."),
- ("Coaching de décision","Pour décider en leader","Face à un choix stratégique, un dilemme ou une décision à fort enjeu, le coaching de décision vous aide à clarifier vos options, à peser les conséquences et à assumer vos choix.")]), h2="Les formes de coaching", sub="Touchez une forme pour en lire le détail.")
-ind += sec("concretement", discovery("À l’issue de cet échange, nous regardons ensemble si le coaching individuel est adapté à vos besoins.") + flow("Dans le cadre du coaching individuel") + f'''<div class="phase"><div class="phase-head"><span class="num">2</span><h3>L’accompagnement</h3></div>
-<div class="panel"><h4>Le contrat : la démarche RPBDC</h4>{rpbdc([("R Réel","Explorer la situation réelle : les faits, le contexte."),("P Problème","Identifier l’écart entre la situation réelle et la situation souhaitée."),("B Besoin","Clarifier vos besoins pour atteindre la situation souhaitée."),("D Demande","Préciser ce que vous attendez du coach et définir notre façon de travailler."),("C Contrat","Co-construire un contrat d’accompagnement explicite.")])}</div>
-<div class="panel"><h4>Les rendez-vous</h4><p>Séances d’1 h 30, sur une durée définie ensemble. Chaque séance respecte les principes suivants :</p>{arrows(["Confidentialité totale","Neutralité bienveillante","Respect du rythme","Finalité d’autonomie"])}</div>
-<div class="panel infog"><div><h5>La relation coach – client</h5>{duo("Le coach","Expert du processus","Alliance et confiance","Vous","Expert de votre situation")}</div>
+ ("Coaching de développement","Pour changer de posture","La personne évolue dans son rôle et doit adapter sa posture managériale. Le coaching l’accompagne dans cette montée en maturité, pour incarner pleinement sa nouvelle responsabilité."),
+ ("Coaching de résolution","Pour débloquer une situation","Conflit, impasse relationnelle, blocage opérationnel : le coaching aide à trouver une issue constructive en explorant de nouvelles perspectives."),
+ ("Coaching de transition","Pour préparer l’avenir","Changement de poste, de fonction ou de périmètre : le coaching accompagne ces moments charnières pour prendre les bonnes décisions avec sérénité."),
+ ("Coaching de performance","Pour acquérir des compétences nouvelles","Communication, leadership, gestion du temps, prise de parole : le coaching vise des objectifs concrets et mesurables."),
+ ("Coaching de décision","Pour décider en leader","Face à un choix stratégique ou un dilemme, le coaching aide à clarifier les options, peser les conséquences et assumer ses choix.")]), h2="Les formes de coaching", sub="Touchez une forme pour en lire le détail.")
+ind += sec("concretement", discovery("À l’issue de cet échange, nous regardons ensemble si le coaching individuel est adapté au besoin.") + flow("Dans le cadre du coaching individuel") + f'''<div class="phase"><div class="phase-head"><span class="num">2</span><h3>L’accompagnement</h3></div>
+<div class="panel"><h4>Le contrat : la démarche RPBDC</h4>{rpbdc([("R Réel","Explorer la situation réelle : les faits, le contexte."),("P Problème","Identifier l’écart entre la situation réelle et la situation souhaitée."),("B Besoin","Clarifier les besoins pour atteindre la situation souhaitée."),("D Demande","Préciser ce qui est attendu du coach et définir la façon de travailler."),("C Contrat","Un contrat explicite, à trois avec l’organisation : objectifs partagés, contenu des séances confidentiel.")])}</div>
+<div class="panel"><h4>Les rendez-vous</h4><p>Séances d’1 h 30, toutes les 2 à 4 semaines, sur 3, 6 ou 9 mois. Chaque séance respecte les principes suivants :</p>{arrows(ENGAGEMENTS)}</div>
+<div class="panel infog"><div><h5>La relation coach – client</h5>{duo("Le coach","Expert du processus","Alliance et confiance","La personne","Experte de sa situation")}</div>
 <div><h5>Le cadre dans le temps</h5><div class="timeline"><div><b>Passé</b>Histoire et ressources</div>{ic("arrow")}<div class="now"><b>Présent</b>Ici et maintenant</div>{ic("arrow")}<div><b>Futur</b>Vision et objectifs</div></div></div>
-<div><h5>Les 7 niveaux de changement</h5>{lv}</div></div></div>''', cls="alt", h2="Concrètement", sub="Un processus clair, ajusté à votre situation.", narrow=True)
-ind += sec("situations", DISCLAIMER + situations([("Prise de poste","Un nouveau directeur, promu en interne, doit asseoir sa légitimité auprès de ses anciens pairs.","En quelques mois : une posture clarifiée, une confiance restaurée, de premiers résultats concrets."),("Prévention de l’épuisement","Un manager en surcharge depuis deux ans peine à prendre du recul.","Il retrouve de l’espace mental et prend ses décisions avec plus de justesse."),("Transition professionnelle","Une directrice hésite entre rester à son poste et lancer un projet personnel.","Un choix assumé et un plan de transition structuré.")]), h2="Situations types", narrow=True)
-ind += others("individuel") + cta_band(subject="Coaching individuel")
-page("/accompagnements/individuel/", "Coaching individuel · Cabinet CS", "Coaching individuel professionnel pour managers, collaborateurs, leaders émergents et indépendants : Cabinet CS, Clément Simon, coach certifié à Bourgoin-Jallieu.", "acc-individuel", ind)
+<div><h5>Les 7 niveaux de changement</h5>{lv}</div></div></div>''', cls="alt", h2="Concrètement", sub="Un processus clair, ajusté à chaque situation.", narrow=True)
+ind += sec("situations", DISCLAIMER + situations(SIT_IND), h2="Situations types", narrow=True)
+ind += others([ORG_COL, DIR]) + cta_band(title="Parlons de votre besoin")
+page(ORG_IND[0], "Coaching individuel · Organisations · Cabinet CS", "Coaching individuel des managers, cadres et collaborateurs, à la demande de leur organisation : Cabinet CS, Clément Simon, coach certifié à Bourgoin-Jallieu.", "org-ind", ind)
 
-# ================= COACHING D'EQUIPE =================
-eq = offer_hero("Coaching d’équipe", "/assets/img/equipe.jpg", "", "Coaching d’équipe", "Accompagner une équipe", "Un accompagnement des équipes pour développer la performance collective, renforcer la cohésion et atteindre vos objectifs communs.", "Coaching d'équipe", [("intention","L’intention"),("pour-qui","Pour qui ?"),("approche","Mon approche"),("concretement","Concrètement"),("situations","Situations types")])
-eq += sec("intention", '<div class="prose"><p>Le coaching d’équipe est un accompagnement professionnel qui soutient l’<strong>intelligence collective</strong> d’une équipe, au service d’une vision partagée. Il fait évoluer le collectif à travers trois stades :</p><ul class="bullets"><li>la collection d’individus, centrée sur l’opérationnel ;</li><li>le groupe solidaire, centré sur les relations ;</li><li>l’équipe performante, unie par une vision commune.</li></ul><p class="pull">« Une équipe qui fonctionne bien n’est pas une équipe sans tension : c’est une équipe qui sait les traverser. »</p></div>', cls="alt", h2="L’intention", center=False, narrow=True)
-eq += sec("pour-qui", cards_row([("users","Équipes en tension","Rétablir le dialogue, dépasser les non-dits et reconstruire la confiance au sein de l’équipe."),("target","Projets transversaux","Aligner des profils différents autour d’un objectif commun et fluidifier la collaboration."),("shield","Comités de direction","Renforcer la cohésion de la gouvernance et créer une dynamique de leadership partagé."),("star","Équipes en croissance","Structurer les modes de fonctionnement pour accompagner le changement d’échelle.")]), h2="Pour qui ?", narrow=True)
-eq += sec("approche", pillars([
+# ================================================================ COACHING COLLECTIF
+col = offer_hero([("Organisations","/organisations/"),("Coaching collectif",None)], ORG_COL[2], "Pour les organisations", "Coaching collectif", "Accompagner une équipe, un comité, un groupe projet", "Un accompagnement des équipes pour développer la performance collective, renforcer la cohésion et atteindre vos objectifs communs.", [("intention","L’intention"),("pour-qui","Pour qui ?"),("approche","Mon approche"),("concretement","Concrètement"),("situations","Situations types")])
+col += sec("intention", '<div class="prose"><p>Le coaching collectif est un accompagnement professionnel qui soutient l’<strong>intelligence collective</strong> d’une équipe, au service d’une vision partagée. Il fait évoluer le collectif à travers trois stades :</p><ul class="bullets"><li>la collection d’individus, centrée sur l’opérationnel ;</li><li>le groupe solidaire, centré sur les relations ;</li><li>l’équipe performante, unie par une vision commune.</li></ul><p class="pull">« Une équipe qui fonctionne bien n’est pas une équipe sans tension : c’est une équipe qui sait les traverser. »</p></div>', cls="alt", h2="L’intention", center=False, narrow=True)
+col += sec("pour-qui", cards_row([("users","Équipes en tension","Rétablir le dialogue, dépasser les non-dits et reconstruire la confiance au sein de l’équipe."),("target","Projets transversaux","Aligner des profils différents autour d’un objectif commun et fluidifier la collaboration."),("shield","Comités de direction","Renforcer la cohésion de la gouvernance et créer une dynamique de leadership partagé."),("star","Équipes en croissance","Structurer les modes de fonctionnement pour accompagner le changement d’échelle.")]), h2="Pour qui ?", narrow=True)
+col += sec("approche", pillars([
  ("layers","Les trois stades de développement des équipes","De la collection d’individus au groupe solidaire, puis à l’équipe performante unie par une vision commune : le coaching accompagne ce passage."),
  ("target","Le modèle ORF+V","Il équilibre quatre dimensions : les Opérations (vos enjeux métiers), la Régulation (un espace pour clarifier les non-dits), la Formation (concepts et méthodes nouvelles) et la Vision (rester connecté au projet de l’équipe)."),
  ("shield","Le circuit de confiance","J’installe un cadre de protections et de permissions. Chacun peut y exprimer ses besoins sans crainte du jugement : c’est la condition pour libérer l’intelligence collective."),
- ("zap","Sens, processus, contenu","Le sens passe avant la manière de faire (le processus) et avant ce que l’on fait (le contenu). L’enjeu : permettre à votre équipe de naviguer avec succès dans l’incertitude."),
- ("usercheck","Ma posture : le Sherpa","Facilitateur neutre, je n’apporte pas de solutions toutes faites. Je crée les conditions pour que vous co-construisiez votre vision partagée, en alignant l’identité de l’équipe et vos projets opérationnels.")]), cls="alt", h2="Ce qui définit mon coaching d’équipe", sub="Cinq piliers pour transformer un groupe en équipe performante.", narrow=True)
+ ("zap","Sens, processus, contenu","Le sens passe avant la manière de faire (le processus) et avant ce que l’on fait (le contenu). L’enjeu : permettre à votre équipe d’avancer dans l’incertitude."),
+ ("usercheck","Ma posture : le Sherpa","Facilitateur neutre, je n’apporte pas de solutions toutes faites. Je crée les conditions pour que l’équipe construise sa propre vision partagée.")]), cls="alt", h2="Ce qui définit mon coaching collectif", sub="Cinq piliers pour transformer un groupe en équipe performante.", narrow=True)
 stades = f'<div class="stades"><div><i>1</i>Collection d’individus</div>{ic("lr")}<div><i>2</i>Groupe solidaire</div>{ic("lr")}<div><i>3</i>Équipe performante</div></div>'
 orfv = '<div class="orfv">' + "".join(f'<div><span class="L">{a}</span><b>{b}</b>{c}</div>' for a,b,c in [("O","Opérations","Enjeux métiers"),("R","Régulation","Qualité des liens"),("F","Formation","Apprentissages"),("V","Vision","Cap commun")]) + '</div>'
 tri = f'<div class="trilogy"><div><i>1</i><b>Sens</b>Le pourquoi</div>{ic("arrow")}<div><i>2</i><b>Processus</b>Le comment</div>{ic("arrow")}<div><i>3</i><b>Contenu</b>Le quoi</div></div>'
-eq += sec("concretement", discovery("À l’issue de cet échange, nous regardons ensemble si le coaching d’équipe est adapté à vos besoins.") + flow("Dans le cadre du coaching d’équipe") + f'''<div class="phase"><div class="phase-head"><span class="num">2</span><h3>L’accompagnement</h3></div>
-<div class="panel"><h4>Le contrat : la démarche RPBDC</h4>{rpbdc([("R Réel","Diagnostiquer la dynamique actuelle de l’équipe : forces, tensions, modes de fonctionnement."),("P Problème","Identifier les blocages du système : communication, rôles flous, conflits latents."),("B Besoin","Clarifier le besoin collectif : cohésion, alignement stratégique, régulation."),("D Demande","Formuler la demande du prescripteur et celle de l’équipe."),("C Contrat","Définir le contrat entre l’équipe, son responsable et le coach. Contrat tripartite quand il y a un prescripteur.")])}</div>
-<div class="panel"><h4>Les rendez-vous</h4><p>Selon le contrat, des temps collectifs et, si besoin, individuels. Le format se construit avec vous : un atelier, une demi-journée, un cycle de séances. Chaque séance respecte les principes suivants :</p>{arrows(["Confidentialité totale","Neutralité bienveillante","Respect du rythme","Finalité d’autonomie"])}</div>
+col += sec("concretement", discovery("À l’issue de cet échange, nous regardons ensemble si le coaching collectif est adapté au besoin.") + flow("Dans le cadre du coaching collectif") + f'''<div class="phase"><div class="phase-head"><span class="num">2</span><h3>L’accompagnement</h3></div>
+<div class="panel"><h4>Le contrat : la démarche RPBDC</h4>{rpbdc([("R Réel","Diagnostiquer la dynamique actuelle de l’équipe : forces, tensions, modes de fonctionnement."),("P Problème","Identifier les blocages : communication, rôles flous, conflits latents."),("B Besoin","Clarifier le besoin collectif : cohésion, alignement stratégique, régulation."),("D Demande","Formuler la demande de l’organisation et celle de l’équipe."),("C Contrat","Un contrat entre l’organisation, l’équipe, son responsable et le coach.")])}</div>
+<div class="panel"><h4>Les rendez-vous</h4><p>Le format se construit avec vous : un atelier, une demi-journée, un cycle de séances, avec si besoin des temps individuels. Chaque séance respecte les principes suivants :</p>{arrows(ENGAGEMENTS)}</div>
 <div class="panel infog"><div><h5>La relation coach – équipe</h5>{duo("Le coach","Sherpa et facilitateur","Circuit de confiance","L’équipe","Co-constructrice de sa vision", b_ic="users")}</div>
 <div><h5>Les trois stades de développement des équipes</h5>{stades}</div><div><h5>Le modèle ORF+V</h5>{orfv}</div><div><h5>La trilogie efficiente</h5>{tri}</div>
 <div><h5>Les engagements</h5>{tags(["Protections et permissions","Intelligence collective","Confidentialité du groupe","Finalité d’autonomie"], True)}</div></div></div>''', h2="Concrètement", sub="Un processus clair, ajusté à votre équipe.", narrow=True)
-eq += sec("situations", DISCLAIMER + situations([("Associés en tension","Deux cofondateurs d’une startup en désaccord stratégique ne se parlent plus depuis plusieurs semaines.","Le dialogue est rétabli, la vision partagée est formalisée, la gouvernance est ajustée."),("Fusion d’équipes","Deux équipes techniques fusionnent après une réorganisation, avec des cultures et des méthodes très différentes.","Un cadre commun, des routines de collaboration et de premiers succès partagés."),("Comité de direction","Un comité de direction de six personnes fonctionne en silos, sans vision partagée ni décisions collectives.","Des rituels de gouvernance, un alignement stratégique et une meilleure réactivité.")]), cls="alt", h2="Situations types", narrow=True)
-eq += others("equipe") + cta_band(subject="Coaching d'équipe")
-page("/accompagnements/equipe/", "Coaching d’équipe · Cabinet CS", "Coaching d’équipe et accompagnement collectif : équipes en tension, comités de direction, projets transversaux. Cabinet CS, Clément Simon, Bourgoin-Jallieu.", "acc-equipe", eq)
+col += sec("situations", DISCLAIMER + situations(SIT_COL), cls="alt", h2="Situations types", narrow=True)
+col += others([ORG_IND, DIR]) + cta_band(title="Parlons de votre équipe")
+page(ORG_COL[0], "Coaching collectif · Organisations · Cabinet CS", "Coaching collectif des équipes, comités de direction et groupes projet, à la demande de l’organisation. Cabinet CS, Clément Simon, Bourgoin-Jallieu.", "org-col", col)
 
-# ================= DIRIGEANTS =================
-BL = [("e-org","Enjeux organisationnels",[("Vision d’entreprise","Définir et porter une vision stratégique claire pour l’organisation."),("Transformation des organisations","Accompagner et piloter les mutations structurelles et culturelles."),("Création d’une culture","Construire et faire vivre une culture alignée avec les valeurs et la mission."),("Mutation et prospective","Anticiper les évolutions du marché et préparer l’organisation aux changements.")]),
- ("e-bus","Enjeux business",[("Exploitation opérationnelle","Piloter l’activité au quotidien avec efficacité et rigueur."),("Management","Animer, coordonner et développer les équipes, individuellement et collectivement."),("Résolution de problèmes","Analyser les situations complexes et trouver des solutions adaptées."),("Amélioration continue","Installer une dynamique d’optimisation des processus et des pratiques.")]),
- ("e-hum","Enjeux humains",[("Développement des personnes","Faire grandir les collaborateurs en compétences et en autonomie."),("Construction d’équipes","Créer des collectifs performants, solidaires et engagés."),("Réflexion stratégique","Prendre de la hauteur pour éclairer les décisions humaines."),("Intelligence relationnelle","Créer du lien, gérer les tensions et développer la coopération.")]),
- ("e-id","Identité du leader",[("Vision perso-pro","L’alignement entre qui vous êtes et ce que vous faites professionnellement."),("Croyances","Les modèles mentaux et convictions qui guident vos décisions."),("Besoins et désirs","Ce qui vous anime profondément et donne de l’énergie à votre action."),("Stratégies d’actions","Vos modes de fonctionnement et vos réflexes comportementaux.")])]
+# ================================================================ DIRIGEANTS & ENTREPRENEURS (Sous l'Olivier)
+BL = [("Enjeux organisationnels",[("Vision d’entreprise","Définir et porter une vision stratégique claire pour l’organisation."),("Transformation des organisations","Accompagner et piloter les mutations structurelles et culturelles."),("Création d’une culture","Construire et faire vivre une culture alignée avec les valeurs et la mission."),("Mutation et prospective","Anticiper les évolutions du marché et préparer l’organisation aux changements.")]),
+ ("Enjeux business",[("Exploitation opérationnelle","Piloter l’activité au quotidien avec efficacité et rigueur."),("Management","Animer, coordonner et développer les équipes, individuellement et collectivement."),("Résolution de problèmes","Analyser les situations complexes et trouver des solutions adaptées."),("Amélioration continue","Installer une dynamique d’optimisation des processus et des pratiques.")]),
+ ("Enjeux humains",[("Développement des personnes","Faire grandir les collaborateurs en compétences et en autonomie."),("Construction d’équipes","Créer des collectifs performants, solidaires et engagés."),("Réflexion stratégique","Prendre de la hauteur pour éclairer les décisions humaines."),("Intelligence relationnelle","Créer du lien, gérer les tensions et développer la coopération.")]),
+ ("Identité du leader",[("Vision perso-pro","L’alignement entre qui vous êtes et ce que vous faites professionnellement."),("Croyances","Les modèles mentaux et convictions qui guident vos décisions."),("Besoins et désirs","Ce qui vous anime profondément et donne de l’énergie à votre action."),("Stratégies d’actions","Vos modes de fonctionnement et vos réflexes comportementaux.")])]
 def comps(axe, items): return "".join(f'<button type="button" class="comp" aria-pressed="false" data-axe="{axe}" data-desc="{d}">{t}</button>' for t,d in items)
-org,bus,hum,idt = BL
+org_,bus,hum,idt = BL
 blason = f'''<div class="blason">
 <p class="bl-axis"><span>Performance <i>(faire)</i></span><span>|</span><span>Développement <i>(être)</i></span></p>
 <div class="env e-org"><p class="env-title">Enjeux organisationnels</p><p class="env-sub">Vision · Transformation · Culture · Prospective</p>
-<div class="bl-row">{comps(org[1],org[2])}</div>
-<div class="bl-mid"><div class="env e-hum"><p class="env-title">Enjeux humains</p><div class="bl-col">{comps(hum[1],hum[2])}</div></div>
-<div class="env e-id"><p class="env-title">Identité du leader</p><p class="env-sub" style="margin:0"><i>Ici et maintenant</i></p><div class="bl-col">{comps(idt[1],idt[2])}</div></div>
-<div class="env e-bus"><p class="env-title">Enjeux business</p><div class="bl-col">{comps(bus[1],bus[2])}</div></div></div>
+<div class="bl-row">{comps(*org_)}</div>
+<div class="bl-mid"><div class="env e-hum"><p class="env-title">Enjeux humains</p><div class="bl-col">{comps(*hum)}</div></div>
+<div class="env e-id"><p class="env-title">Identité du leader</p><p class="env-sub" style="margin:0"><i>Ici et maintenant</i></p><div class="bl-col">{comps(*idt)}</div></div>
+<div class="env e-bus"><p class="env-title">Enjeux business</p><div class="bl-col">{comps(*bus)}</div></div></div>
 <p class="bl-foot"><span>← Relationnel</span><span>Opérationnel →</span></p></div>
 <p class="bl-legend"><span><i style="background:#c94444"></i><b>Instantané</b> · ici et maintenant</span><span><i style="background:#8a63b8"></i><b>Court terme</b> · relations et équipes</span><span><i style="background:#b8944a"></i><b>Moyen terme</b> · opérations et résultats</span><span><i style="background:#3b7dc4"></i><b>Long terme</b> · vision et organisation</span></p>
 <div class="bl-detail" hidden aria-live="polite"><small></small><b></b><p></p></div>
 </div>'''
-cats = [("Le rapport à soi","Confiance, légitimité, alignement"),("Le rapport aux autres","Communication, leadership, gestion des tensions"),("La vision","Clarifier ses priorités, donner du sens à ses actions"),("Les difficultés","Blocages, surcharge, décisions complexes"),("La posture","Trouver sa place, assumer son rôle"),("L’équilibre","Articuler vie professionnelle et vie personnelle")]
-catsh = '<ul class="cats">' + "".join(f'<li>{ic("arrow")}<span><b>{a} :</b> {b}</span></li>' for a,b in cats) + '</ul>'
 def fmt(items): return '<div class="fmt">' + "".join(f'<div>{ic(i)}<b>{a}</b>{b}</div>' for i,a,b in items) + '</div>'
-def minis(items): return '<div class="mini-sits">' + "".join(f'<div><b>{t}</b><span><strong>Situation :</strong> {c}</span><span class="r"><strong style="color:inherit">Ce qui peut changer :</strong> {r}</span></div>' for t,c,r in items) + '</div>'
-d = offer_hero("Dirigeants & entrepreneurs", "/assets/img/olivier.jpg", "", "Dirigeants & entrepreneurs", "Décider, transmettre, traverser sans s’épuiser.", "Un accompagnement dédié aux dirigeants qui veulent clarifier leur cap, soutenir leur posture et enrichir leur pratique avec des cadres éprouvés.", "Sous l'Olivier", [("enjeux","Vos enjeux"),("intention","L’intention"),("espaces","Les deux espaces"),("format","Format")])
-d += sec("enjeux", cards_row([("compass","Clarifier votre cap","Prendre le recul nécessaire pour relire votre stratégie, vos priorités, et leur alignement avec vos valeurs."),("shield","Soutenir votre posture","Travailler la solitude du dirigeant, la pression de la décision et la régulation émotionnelle."),("bulb","Enrichir votre lecture","Acquérir de nouveaux concepts et grilles de lecture pour comprendre vos enjeux d’organisation et d’humain."),("target","Préparer vos transitions","Cession, transmission, changement d’échelle, repositionnement : avancer avec méthode et sérénité.")]), kicker="Vos enjeux", h2="Ce que vous traversez")
-d += sec("intention", f'''<div class="prose"><p>Diriger, c’est porter une charge particulière : la décision, la solitude, la lecture permanente du contexte. Mon rôle n’est pas de vous donner des réponses toutes faites, mais de <strong>créer un espace</strong> pour que vous puissiez penser, ressentir et décider avec clarté.</p><p><strong>Sous l’Olivier est une offre d’accompagnement pour soutenir les dirigeants</strong> dans leurs choix, leur posture et leur développement.</p><p>Deux espaces complémentaires sont à votre disposition : un espace de <strong>ressourcement</strong> pour reposer la pensée, et un espace de <strong>transmission</strong> pour enrichir vos repères.</p></div>
-<div class="olive-card"><img src="/assets/img/olivier.jpg" alt="Illustration d’un olivier" loading="lazy"><div class="t"><p class="kicker">Pourquoi « Sous l’Olivier » ?</p><p>L’olivier est un arbre millénaire, symbole de robustesse, de patience et de résilience. Son ombre offre un espace de repos et de réflexion.</p><p>S’installer « Sous l’Olivier », c’est prendre le temps de se poser, de regarder la situation avec recul et de repartir avec une vision plus claire.</p><p><em>Ainsi, nous fortifions vos racines pour assurer votre croissance.</em></p></div></div>''', cls="alt", h2="L’intention", center=False, narrow=True)
-espaces = f'''<div class="spaces">
-<details class="space" open><summary><span class="chip-ic">{ic("tree")}</span><span><b>Espace de ressourcement</b><span>Reposer la pensée, clarifier les décisions</span></span></summary>
-<div class="space-body"><p>Un cadre confidentiel pour déposer la charge, prendre du recul et avancer dans vos décisions les plus exigeantes. Votre actualité fait l’ordre du jour : chaque séance part de ce que vous vivez au moment présent. Les sujets couvrent votre vie professionnelle, et ce qui la touche dans votre vie personnelle.</p>
-<div><h4>{ic("sparkle")}Ce qui est travaillé en séance</h4>{catsh}</div>
-<div><h4>Ce que nous pouvons aussi regarder</h4>{mores([("La colonne vertébrale du sens","Mettre l’essentiel au cœur de l’important","Un outil de clarification qui distingue ce qui est essentiel (vos valeurs, votre identité) de ce qui est important (vos priorités, vos projets). En alignant ces deux dimensions, vous gagnez en cohérence et en puissance d’action. Particulièrement utile dans les moments de doute, de transition ou de choix stratégique."),("Les trois stades du responsable","Coordonner, rassembler, inspirer","Trois niveaux de maturité du leader : le coordinateur (il gère les tâches), le rassembleur (il fédère les personnes) et l’inspirateur (il donne du sens et libère l’autonomie). Identifier votre stade actuel permet de travailler les compétences qui vous feront évoluer."),("Le Blason","Cibler les compétences mobilisables","Le Blason du Leadership Intégral cartographie 16 compétences réparties sur 4 axes : organisationnel, business, humain, identité. Il aide à voir vos forces et vos zones de développement, et à orienter l’accompagnement.")])}</div>
-<div><h4>Situations types</h4><p class="small" style="margin:-6px 0 12px">Des exemples illustratifs, pas des témoignages de clients.</p>{minis([("Cession d’entreprise","Un dirigeant prépare la cession de sa PME après quinze ans à sa tête.","Un projet de vie après la cession clarifié, une transition vécue plus sereinement."),("Surcharge prolongée","Une dirigeante, disponible en permanence depuis trois ans, n’arrive plus à décrocher.","Elle retrouve de l’espace mental et ajuste son mode de gouvernance."),("Décision stratégique","Un fondateur hésite entre lever des fonds et rester autofinancé.","Une décision assumée et alignée avec ses valeurs.")])}</div>
-<div id="format"><h4>Format</h4>{fmt([("clock","Séances d’1 h 30","Toutes les 2 à 4 semaines"),("shield","Confidentialité totale","Cadre déontologique strict"),("compass","Engagement","3, 6 ou 9 mois"),("clipboard","Bilans réguliers","Toutes les 4 à 6 séances")])}<p class="small" style="margin-top:10px"><i>Pour des associés (de 2 à 4 personnes), les modalités sont adaptées.</i></p></div>
-</div></details>
-<details class="space"><summary><span class="chip-ic">{ic("book")}</span><span><b>Espace de transmission</b><span>Acquérir des repères pour enrichir votre pratique</span></span></summary>
-<div class="space-body"><p>Un espace pédagogique pour vous doter de <strong>repères conceptuels solides</strong>. Le travail s’appuie sur le <strong>Blason du Leadership Intégral</strong>, une cartographie qui permet de visualiser <strong>16 compétences clés</strong> du dirigeant réparties sur 4 axes complémentaires, et d’orienter l’accompagnement vers les zones les plus stratégiques pour vous.</p>
-<div><h4>{ic("layers")}Ce qui est travaillé en séance : le Blason</h4><p class="hint" style="margin:-4px 0 14px">{ic("info")}Touchez une compétence pour découvrir son détail.</p>{blason}</div>
-<div><h4>Les apports</h4><ul class="bullets"><li>54 concepts issus du coaching, du management et des sciences humaines</li><li>Des modèles de référence : VSB, RPBDC, ORF+V, niveaux logiques de Dilts</li><li>Des apports courts et une mise en pratique immédiate dans votre contexte</li></ul></div>
-<div><h4>Format</h4>{fmt([("clock","2 séances par mois","Apports et mise en pratique"),("cap","Index des concepts","54 cadres de référence"),("compass","Engagement","3, 6 ou 9 mois"),("pin","Lieu","Au cabinet, en visio ou dans vos locaux")])}</div>
-</div></details></div>'''
-d += sec("espaces", espaces, kicker="Concrètement", h2="Deux espaces dédiés aux dirigeants", sub="Ouvrez chaque espace pour découvrir le détail.", narrow=True)
-d += others("dirigeants") + cta_band(title="Échangeons sur vos enjeux", text="Un premier échange confidentiel de 30 minutes, offert, pour comprendre votre situation. Sans engagement.", subject="Sous l'Olivier")
-page("/accompagnements/dirigeants/", "Dirigeants & entrepreneurs · Sous l’Olivier · Cabinet CS", "Sous l’Olivier : un accompagnement pour les dirigeants et entrepreneurs, entre ressourcement et transmission. Cabinet CS, Clément Simon, coach certifié à Bourgoin-Jallieu.", "acc-dirigeants", d)
+themes = [("user","Le rapport à soi","Confiance, légitimité, alignement."),("users","Le rapport aux autres","Communication, leadership, gestion des tensions."),("compass","La vision","Clarifier ses priorités, donner du sens à ses actions."),("zap","Les difficultés","Blocages, surcharge, décisions complexes."),("flag","La posture","Trouver sa place, assumer son rôle."),("balance","L’équilibre","Articuler vie professionnelle et vie personnelle.")]
 
-# ================= A PROPOS =================
-ab = f'''<section class="hero"><div class="wrap">
-<nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a><span aria-hidden="true">›</span><span aria-current="page">À propos</span></nav>
+d = offer_hero([("Dirigeants & entrepreneurs",None)], DIR[2], "Pour les dirigeants et entrepreneurs", "Sous l’Olivier", "Un espace de ressourcement pour décider sans s’épuiser", "Dirigeant, fondateur, indépendant ou associé : un espace confidentiel pour déposer la charge, prendre du recul et avancer dans vos décisions les plus exigeantes.", [("enjeux","Vos enjeux"),("intention","L’intention"),("travail","Ce qu’on travaille"),("format","Format"),("situations","Situations types")], how="format")
+d += sec("enjeux", cards_row([("compass","Clarifier votre cap","Prendre le recul nécessaire pour relire votre stratégie, vos priorités, et leur alignement avec vos valeurs."),("shield","Soutenir votre posture","Travailler la solitude du dirigeant, la pression de la décision et la régulation émotionnelle."),("bulb","Enrichir votre lecture","Acquérir des grilles de lecture pour comprendre vos enjeux d’organisation et d’humain."),("target","Préparer vos transitions","Cession, transmission, changement d’échelle, repositionnement : avancer avec méthode et sérénité.")]) + '<p class="small" style="text-align:center;margin-top:20px">Pour qui : dirigeants, fondateurs, indépendants, et associés de 2 à 4 personnes (modalités adaptées).</p>', kicker="Vos enjeux", h2="Ce que vous traversez")
+d += sec("intention", f'''<div class="prose"><p>Diriger, c’est porter une charge particulière : la décision, la solitude, la lecture permanente du contexte. Mon rôle n’est pas de vous donner des réponses toutes faites, mais de <strong>créer un espace</strong> pour que vous puissiez penser, ressentir et décider avec clarté.</p><p>Votre actualité fait l’ordre du jour : chaque séance part de ce que vous vivez au moment présent. Les sujets couvrent votre vie professionnelle, et ce qui la touche dans votre vie personnelle.</p></div>
+<div class="olive-card"><img src="/assets/img/olivier.jpg" alt="Illustration d’un olivier" loading="lazy"><div class="t"><p class="kicker">Pourquoi « Sous l’Olivier » ?</p><p>L’olivier est un arbre millénaire, symbole de robustesse, de patience et de résilience. Son ombre offre un espace de repos et de réflexion.</p><p>S’installer « Sous l’Olivier », c’est prendre le temps de se poser, de regarder la situation avec recul et de repartir avec une vision plus claire.</p><p><em>Ainsi, nous fortifions vos racines pour assurer votre croissance.</em></p></div></div>''', cls="alt", h2="L’intention", center=False, narrow=True)
+d += sec("travail", '<div class="themes">' + "".join(f'<div class="card"><span class="chip-ic">{ic(i)}</span><h3>{t}</h3><p>{x}</p></div>' for i,t,x in themes) + '</div>' +
+ '<h3 class="sub-h">Des outils que nous pouvons mobiliser</h3>' + mores([("La colonne vertébrale du sens","Mettre l’essentiel au cœur de l’important","Un outil de clarification qui distingue ce qui est essentiel (vos valeurs, votre identité) de ce qui est important (vos priorités, vos projets). En alignant ces deux dimensions, vous gagnez en cohérence et en puissance d’action."),("Les trois stades du responsable","Coordonner, rassembler, inspirer","Trois niveaux de maturité du leader : le coordinateur (il gère les tâches), le rassembleur (il fédère les personnes) et l’inspirateur (il donne du sens et libère l’autonomie). Identifier votre stade actuel permet de travailler les compétences qui vous feront évoluer."),("Le Blason du Leadership Intégral","Repérer vos forces et vos marges de progression","16 compétences du dirigeant réparties sur 4 axes : organisationnel, business, humain, identité. Il aide à orienter le travail vers ce qui compte le plus pour vous. Voir le schéma plus bas.")]),
+ kicker="Ce qu’on travaille en séance", h2="Votre actualité fait l’ordre du jour")
+d += sec("format", fmt([("clock","Séances d’1 h 30","Toutes les 2 à 4 semaines"),("compass","Engagement","3, 6 ou 9 mois"),("clipboard","Bilans réguliers","Toutes les 4 à 6 séances"),("pin","Lieu","Au cabinet, en visio ou dans vos locaux")]) + '<div class="note" style="margin-top:20px">' + ic("shield") + ' <b>Confidentialité totale</b> : vous venez pour vous-même, le contrat est entre vous et moi. Rien n’est partagé avec un tiers.</div>' + '<div style="margin-top:32px">' + discovery("À l’issue de cet échange, nous regardons ensemble si Sous l’Olivier répond à votre besoin.") + '</div>', cls="alt", kicker="Format", h2="Comment ça se passe", narrow=True)
+d += sec("situations", DISCLAIMER + situations(SIT_DIR, cols=2), h2="Situations types")
+d += sec("blason", f'''<details class="space"><summary><span class="chip-ic">{ic("book")}</span><span><b>En complément : l’espace de transmission</b><span>Des repères conceptuels pour enrichir votre pratique de dirigeant</span></span></summary>
+<div class="space-body"><p>Un temps pédagogique, en complément du ressourcement, qui s’appuie sur le <strong>Blason du Leadership Intégral</strong> : une cartographie de <strong>16 compétences clés</strong> du dirigeant réparties sur 4 axes. Les apports sont courts et mis en pratique tout de suite dans votre contexte.</p>
+<div><p class="hint" style="margin-bottom:14px">{ic("info")}Touchez une compétence pour découvrir son détail.</p>{blason}</div></div></details>''', cls="alt", narrow=True)
+d += others([ORG_IND, ORG_COL], title="Vous êtes une organisation ?") + cta_band(title="Échangeons sur vos enjeux", text="Un premier échange confidentiel de 30 minutes, offert, pour comprendre votre situation. Sans engagement.")
+page(DIR[0], "Dirigeants & entrepreneurs · Sous l’Olivier · Cabinet CS", "Sous l’Olivier : un espace de ressourcement pour les dirigeants, fondateurs, indépendants et associés. Cabinet CS, Clément Simon, coach certifié à Bourgoin-Jallieu.", "dir", d)
+
+# ================================================================ A PROPOS
+ab = f'''<section class="hero"><div class="wrap">{crumbs([("À propos",None)])}
 <div class="who-grid"><div class="prose"><p class="kicker">À propos</p><h1>Clément Simon</h1><p class="lead">Ingénieur de formation, je suis devenu coach professionnel parce que ce qui m’a toujours intéressé, c’est ce qui se joue entre les personnes quand une situation devient difficile.</p>
 <p>Je suis certifié par l’école JBS Coaching, dans la culture Coach &amp; Team de Vincent Lenhardt. J’accompagne des personnes en individuel et j’anime des collectifs : équipes, comités, groupes de travail. J’ai aussi été engagé plusieurs années à la Jeune Chambre Économique, sur le développement du leadership citoyen.</p>
 <p>Ce qu’on me renvoie le plus souvent : une écoute qui soutient et qui structure, et une capacité à remettre de la clarté là où tout semble emmêlé.</p>
-<div class="btns"><a class="btn" href="/contact/">Prendre rendez-vous {ic("arrow")}</a><a class="btn ghost" href="/accompagnements/">Voir les accompagnements</a></div></div>
+<div class="btns"><a class="btn" href="/contact/">Prendre rendez-vous {ic("arrow")}</a></div></div>
 <figure class="portrait"><img src="/assets/portrait.jpg" alt="Portrait de Clément Simon" width="640" height="804"><figcaption><b>Clément Simon</b>Coach professionnel certifié, fondateur du Cabinet CS</figcaption></figure></div>
 </div></section>
 '''
 ab += sec("parcours", '<div class="facts-list grid2">' + "".join(f'<div><small>{a}</small><p>{b}</p></div>' for a,b in [("Formation","Ingénieur, Mines-Télécom"),("Certification","Coach professionnel, JBS Coaching et Transformance Pro"),("Cadres de référence","Coach &amp; Team, communication non violente (CNV), IFS, analyse transactionnelle"),("Ils m’ont fait confiance","Conseil de développement du Nord-Isère, CCI, Missions locales, École de Gestion et de Commerce")]) + '</div>', cls="alt", kicker="Parcours", h2="Formation et références")
-ab += sec("pratique", '<div class="grid3">' + "".join(f'<div class="card"><span class="chip-ic">{ic(i)}</span><h3>{t}</h3><p>{d_}</p></div>' for i,t,d_ in [("usercheck","La posture avant l’outil","Les outils servent la relation, pas l’inverse. C’est la qualité de présence qui permet d’avancer."),("heart","Le lien d’abord, le résultat ensuite","Un cadre de confiance solide est la condition pour obtenir des résultats durables."),("compass","L’autonomie comme but","Je ne décide pas à votre place. L’accompagnement vise à ce que vous n’ayez plus besoin de moi.")]) + '</div>' + '<p class="note" style="max-width:780px;margin:28px auto 0">Si votre sujet relève d’un autre métier (santé, juridique, technique), je vous oriente vers une personne de confiance de mon réseau.</p>', kicker="Ma pratique", h2="Trois repères")
-ab += cta_band()
+ab += sec("pratique", '<div class="grid3">' + "".join(f'<div class="card"><span class="chip-ic">{ic(i)}</span><h3>{t}</h3><p>{x}</p></div>' for i,t,x in [("usercheck","La posture avant l’outil","Les outils servent la relation, pas l’inverse. C’est la qualité de présence qui permet d’avancer."),("heart","Le lien d’abord, le résultat ensuite","Un cadre de confiance solide est la condition pour obtenir des résultats durables."),("compass","L’autonomie comme but","Je ne décide pas à votre place. L’accompagnement vise à ce que vous n’ayez plus besoin de moi.")]) + '</div><p class="note" style="max-width:780px;margin:28px auto 0">Si votre sujet relève d’un autre métier (santé, juridique, technique), je vous oriente vers une personne de confiance de mon réseau.</p>', kicker="Ma pratique", h2="Trois repères")
+ab += others([ORG_IND, ORG_COL, DIR], title="Mes accompagnements").replace('class="others"', 'class="others three"') + cta_band()
 page("/a-propos/", "À propos · Clément Simon, coach professionnel · Cabinet CS", "Clément Simon, ingénieur de formation et coach professionnel certifié (JBS Coaching, Coach & Team), fondateur du Cabinet CS à Bourgoin-Jallieu.", "about", ab)
 
-# ================= CONTACT =================
-ct = f'''<section class="hero"><div class="wrap">
-<nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a><span aria-hidden="true">›</span><span aria-current="page">Contact</span></nav>
-<div class="contact-grid"><div class="prose"><p class="kicker">Contact</p><h1>Un premier temps pour faire connaissance</h1><p class="lead">Écrivez-moi ou appelez-moi pour convenir d’un rendez-vous découverte. Je vous réponds sous 48 heures ouvrées.</p>
-<div class="grid2"><div class="card"><span class="chip-ic">{ic("user")}</span><h3>Pour une personne</h3><p>Une séance découverte de 30 minutes, offerte, pour travailler un sujet réel de votre activité et voir si la démarche vous convient.</p></div><div class="card"><span class="chip-ic">{ic("building")}</span><h3>Pour une structure</h3><p>Un premier échange pour comprendre votre besoin et construire ensemble le cadre de l’accompagnement.</p></div></div></div>
+# ================================================================ CONTACT
+ct = f'''<section class="hero"><div class="wrap">{crumbs([("Contact",None)])}
+<div class="contact-grid"><div class="prose"><p class="kicker">Contact</p><h1>Un premier temps pour faire connaissance</h1><p class="lead">Écrivez-moi ou appelez-moi pour convenir d’un rendez-vous découverte de 30 minutes, offert.</p>
+<div class="grid2"><div class="card"><span class="chip-ic">{ic("building")}</span><h3>Vous êtes une organisation</h3><p>Un premier échange pour comprendre votre besoin et construire ensemble le cadre de l’accompagnement.</p></div><div class="card"><span class="chip-ic">{ic("tree")}</span><h3>Vous êtes dirigeant ou entrepreneur</h3><p>Un rendez-vous découverte pour travailler un sujet réel de votre activité et voir si la démarche vous convient.</p></div></div></div>
 <div class="coords">
 <div class="coord"><span class="chip-ic">{ic("mail")}</span><div><small>E-mail</small><a class="v" href="{mailto("Prise de rendez-vous")}">{MAIL}</a></div><button class="copy" type="button" data-copy="{MAIL}">Copier</button></div>
 <div class="coord"><span class="chip-ic">{ic("phone")}</span><div><small>Téléphone</small><a class="v" href="tel:{TELH}">{TEL}</a></div><button class="copy" type="button" data-copy="{TEL}">Copier</button></div>
-<div class="coord"><span class="chip-ic">{ic("pin")}</span><div><small>Lieux</small><b>Bourgoin-Jallieu (38)</b><p class="small">Au cabinet, en visio ou dans les locaux de votre structure</p></div></div>
+<div class="coord"><span class="chip-ic">{ic("pin")}</span><div><small>Lieux</small><b>Bourgoin-Jallieu (38)</b><p class="small">Au cabinet, en visio ou dans vos locaux</p></div></div>
 <div class="btns" style="margin-top:8px"><a class="btn" href="{mailto("Prise de rendez-vous")}">{ic("mail")}Écrire un e-mail</a><a class="btn ghost" href="tel:{TELH}">{ic("phone")}Appeler</a></div>
 </div></div></div></section>
 '''
-page("/contact/", "Contact et rendez-vous · Cabinet CS", "Prendre rendez-vous avec Clément Simon, coach professionnel à Bourgoin-Jallieu : séance découverte de 30 minutes offerte, en visio ou en présentiel.", "contact", ct)
+page("/contact/", "Contact et rendez-vous · Cabinet CS", "Prendre rendez-vous avec Clément Simon, coach professionnel à Bourgoin-Jallieu : rendez-vous découverte de 30 minutes offert, en visio ou en présentiel.", "contact", ct)
 
-# ================= MENTIONS LEGALES =================
-ml = f'''<section class="section"><div class="wrap narrow legal">
-<nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a><span aria-hidden="true">›</span><span aria-current="page">Mentions légales</span></nav>
+# ================================================================ MENTIONS LEGALES
+ml = f'''<section class="section"><div class="wrap narrow legal">{crumbs([("Mentions légales",None)])}
 <h1>Mentions légales</h1>
 <p>Conformément à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l’économie numérique.</p>
 <h2>Éditeur du site</h2>
@@ -200,20 +240,19 @@ ml = f'''<section class="section"><div class="wrap narrow legal">
 </div></section>'''
 page("/mentions-legales/", "Mentions légales · Cabinet CS", "Mentions légales et politique de confidentialité du site cabinetcs.fr.", "", ml, noindex=True)
 
-# ================= 404 =================
-nf = f'''<section class="section"><div class="wrap narrow" style="text-align:center;display:grid;gap:16px;justify-items:center"><p class="kicker">Erreur 404</p><h1>Page introuvable</h1><p class="lead">Cette page n’existe pas ou a été déplacée.</p><div class="btns" style="justify-content:center"><a class="btn" href="/">Retour à l’accueil</a><a class="btn ghost" href="/accompagnements/">Voir les accompagnements</a></div></div></section>'''
+# ================================================================ 404
+nf = f'''<section class="section"><div class="wrap narrow" style="text-align:center;display:grid;gap:16px;justify-items:center"><p class="kicker">Erreur 404</p><h1>Page introuvable</h1><p class="lead">Cette page n’existe pas ou a été déplacée.</p><div class="btns" style="justify-content:center"><a class="btn" href="/">Retour à l’accueil</a><a class="btn ghost" href="/contact/">Contact</a></div></div></section>'''
 page("/404.html", "Page introuvable · Cabinet CS", "Cette page n’existe pas.", "", nf, noindex=True)
 
-# ================= Redirections des anciennes adresses =================
+# ================================================================ Redirections des anciennes adresses
 def redirect(old, new):
     out = ROOT + old + ("index.html" if old.endswith("/") else "")
     os.makedirs(os.path.dirname(out), exist_ok=True)
     open(out, "w", encoding="utf-8").write(f'<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Page déplacée</title><meta name="robots" content="noindex"><link rel="canonical" href="https://cabinetcs.fr{new}"><meta http-equiv="refresh" content="0; url={new}"></head><body><p>Cette page a été déplacée : <a href="{new}">continuer</a>.</p></body></html>\n')
-redirect("/entreprises/collaborateur/", "/accompagnements/individuel/")
-redirect("/entreprises/equipe/", "/accompagnements/equipe/")
-redirect("/entreprises/dirigeants/", "/accompagnements/dirigeants/")
-redirect("/entreprises/", "/accompagnements/")
-redirect("/mentions-legales.html", "/mentions-legales/")
+for old, new in [("/accompagnements/", "/"), ("/accompagnements/individuel/", ORG_IND[0]), ("/accompagnements/equipe/", ORG_COL[0]), ("/accompagnements/dirigeants/", DIR[0]),
+                 ("/entreprises/", "/organisations/"), ("/entreprises/collaborateur/", ORG_IND[0]), ("/entreprises/equipe/", ORG_COL[0]), ("/entreprises/dirigeants/", DIR[0]),
+                 ("/mentions-legales.html", "/mentions-legales/")]:
+    redirect(old, new)
 
-open(ROOT + "/sitemap.xml", "w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>https://cabinetcs.fr{u}</loc></url>\n" for u in ["/","/accompagnements/","/accompagnements/individuel/","/accompagnements/equipe/","/accompagnements/dirigeants/","/a-propos/","/contact/"]) + "</urlset>\n")
+open(ROOT + "/sitemap.xml", "w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>https://cabinetcs.fr{u}</loc></url>\n" for u in ["/", "/organisations/", ORG_IND[0], ORG_COL[0], DIR[0], "/a-propos/", "/contact/"]) + "</urlset>\n")
 print("ok")

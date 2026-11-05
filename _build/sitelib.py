@@ -42,19 +42,19 @@ P = {
 def ic(name, cls="ic"):
     return f'<svg class="{cls}" viewBox="0 0 24 24" aria-hidden="true">{P[name]}</svg>'
 
-OFFERS = [
- ("individuel", "Coaching individuel", "/assets/img/collaborateur.jpg", "Pour une personne : manager, collaborateur, indépendant"),
- ("equipe", "Coaching d’équipe", "/assets/img/equipe.jpg", "Pour un collectif : équipe, comité de direction, projet"),
- ("dirigeants", "Dirigeants & entrepreneurs", "/assets/img/olivier.jpg", "Sous l’Olivier : ressourcement et transmission"),
-]
+# Offres : (adresse, titre, illustration, description courte)
+ORG_IND = ("/organisations/coaching-individuel/", "Coaching individuel", "/assets/img/collaborateur.jpg", "Un manager, un cadre, un collaborateur")
+ORG_COL = ("/organisations/coaching-collectif/", "Coaching collectif", "/assets/img/equipe.jpg", "Une équipe, un comité de direction, un groupe projet")
+DIR = ("/dirigeants-entrepreneurs/", "Dirigeants & entrepreneurs", "/assets/img/olivier.jpg", "Sous l’Olivier, un espace de ressourcement")
+OFFERS = [ORG_IND, ORG_COL, DIR]
 
 def mailto(subject):
     return f"mailto:{MAIL}?subject={urllib.parse.quote(subject)}"
 
 def header(active):
     def cur(k): return ' aria-current="page"' if active == k else ''
-    acc_cls = ' class="in-section"' if active.startswith("acc") and active != "acc" else ''
-    sub = "".join(f'<li><a href="/accompagnements/{s}/"{cur("acc-"+s)}><img src="{img}" alt="" width="44" height="44"><span><b>{t}</b><span>{d}</span></span></a></li>' for s,t,img,d in OFFERS)
+    org_cls = ' class="in-section"' if active in ("org-ind", "org-col") else ''
+    sub = "".join(f'<li><a href="{u}"{cur(k)}><img src="{img}" alt="" width="44" height="44"><span><b>{t}</b><span>{d}</span></span></a></li>' for k,(u,t,img,d) in [("org-ind",ORG_IND),("org-col",ORG_COL)])
     return f'''<a class="skip" href="#contenu">Aller au contenu</a>
 <header class="site-header">
   <div class="wrap hdr">
@@ -63,9 +63,10 @@ def header(active):
     <nav id="nav" class="nav" aria-label="Menu principal">
       <ul>
         <li><a href="/"{cur("home")}>Accueil</a></li>
-        <li class="has-sub"><a href="/accompagnements/"{cur("acc")}{acc_cls}>Accompagnements {ic("chev","ic chev")}</a>
-          <ul class="sub">{sub}<li><a class="all" href="/accompagnements/">Comparer les accompagnements</a></li></ul>
+        <li class="has-sub"><a href="/organisations/"{cur("org")}{org_cls}>Organisations {ic("chev","ic chev")}</a>
+          <ul class="sub">{sub}<li><a class="all" href="/organisations/">Travailler avec votre organisation</a></li></ul>
         </li>
+        <li><a href="{DIR[0]}"{cur("dir")}>Dirigeants &amp; entrepreneurs</a></li>
         <li><a href="/a-propos/"{cur("about")}>À propos</a></li>
         <li><a href="/contact/"{cur("contact")}>Contact</a></li>
         <li class="nav-cta"><a class="btn sm" href="/contact/">Prendre rendez-vous</a></li>
@@ -75,15 +76,14 @@ def header(active):
 </header>'''
 
 def footer():
-    offers = "".join(f'<li><a href="/accompagnements/{s}/">{t}</a></li>' for s,t,_,_ in OFFERS)
     return f'''<footer class="site-footer">
   <div class="wrap">
     <div class="ft">
       <div>
         <a class="brand" href="/"><img src="/assets/logo.png" alt="" width="42" height="42"><span><b>Cabinet CS</b><small>Clément Simon · Coach professionnel certifié</small></span></a>
-        <p>Accompagnement individuel et collectif des dirigeants, cadres, managers, indépendants et équipes. Au cabinet à Bourgoin-Jallieu, en visio ou dans votre structure.</p>
+        <p>Coaching des managers et des équipes pour les organisations. Espace de ressourcement pour les dirigeants et entrepreneurs. Au cabinet à Bourgoin-Jallieu, en visio ou dans vos locaux.</p>
       </div>
-      <nav aria-label="Accompagnements"><h2>Accompagnements</h2><ul>{offers}<li><a href="/accompagnements/">Tous les accompagnements</a></li></ul></nav>
+      <nav aria-label="Accompagnements"><h2>Accompagnements</h2><ul><li><a href="/organisations/">Organisations</a></li><li><a href="{ORG_IND[0]}">· Coaching individuel</a></li><li><a href="{ORG_COL[0]}">· Coaching collectif</a></li><li><a href="{DIR[0]}">Dirigeants &amp; entrepreneurs</a></li></ul></nav>
       <div><h2>Contact</h2><ul><li><a href="mailto:{MAIL}">{MAIL}</a></li><li><a href="tel:{TELH}">{TEL}</a></li><li>Bourgoin-Jallieu (38)</li><li><a href="/contact/">Prendre rendez-vous</a></li></ul></div>
     </div>
     <div class="ft-bottom"><span>© Cabinet CS · Clément Simon</span><span><a href="/a-propos/">À propos</a> · <a href="/mentions-legales/">Mentions légales</a></span></div>
@@ -156,8 +156,12 @@ def pillars(items):
 def mores(items, cols=3):
     return f'<div class="grid{cols} mores">' + "".join(f'<details class="more"><summary><b>{t}</b><span>{s}</span></summary><p class="det">{d}</p></details>' for t,s,d in items) + '</div>'
 
-def situations(items):
-    return '<div class="sits">' + "".join(f'<article class="sit"><h3>{t}</h3><p>{c}</p><p class="res">{ic("compass")}<span>{r}</span></p></article>' for t,c,r in items) + '</div>'
+def situations(items, cols=1):
+    # items : (titre, contexte, demande, travail, résultat)
+    out = f'<div class="sits{" grid" + str(cols) if cols > 1 else ""}">'
+    for t,c,d,w,r in items:
+        out += f'<article class="sit"><h3>{t}</h3><dl><div><dt>Contexte</dt><dd>{c}</dd></div><div><dt>Demande</dt><dd>{d}</dd></div><div><dt>Travail</dt><dd>{w}</dd></div><div class="res"><dt>Résultat</dt><dd>{r}</dd></div></dl></article>'
+    return out + '</div>'
 
 DISCLAIMER = '<p class="disclaimer">Des exemples illustratifs, inspirés de demandes fréquentes en accompagnement. Ce ne sont pas des témoignages de clients.</p>'
 
@@ -181,15 +185,25 @@ def tags(items, accent=False):
 def duo(a, a_sub, mid, b, b_sub, a_ic="usercheck", b_ic="target"):
     return f'<div class="duo"><div class="who">{ic(a_ic)}<b>{a}</b><span>{a_sub}</span></div><div class="mid">{ic("lr")}<span>{mid}</span></div><div class="who">{ic(b_ic)}<b>{b}</b><span>{b_sub}</span></div></div>'
 
-def offer_hero(crumb, img, kicker, h1, tagline, lead, subject, toc):
+def crumbs(items):
+    out = '<nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a>'
+    for i,(label,url) in enumerate(items):
+        out += '<span aria-hidden="true">›</span>'
+        out += f'<a href="{url}">{label}</a>' if url else f'<span aria-current="page">{label}</span>'
+    return out + '</nav>'
+
+def offer_hero(trail, img, kicker, h1, tagline, lead, toc, how="concretement"):
     t = "".join(f'<li><a href="#{a}">{b}</a></li>' for a,b in toc)
     return f'''<section class="hero"><div class="wrap">
-<nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a><span aria-hidden="true">›</span><a href="/accompagnements/">Accompagnements</a><span aria-hidden="true">›</span><span aria-current="page">{crumb}</span></nav>
-<div class="offer-hero"><img class="art" src="{img}" alt="" width="200" height="200"><div class="txt"><p class="kicker gray">Cabinet CS · Accompagnements</p><h1>{h1}</h1><p class="tagline">{tagline}</p><p class="lead">{lead}</p>
-<div class="btns"><a class="btn" href="/contact/">Premier échange gratuit {ic("arrow")}</a><a class="btn ghost" href="#{toc[-2][0]}">Comment ça se passe</a></div></div></div></div></section>
+{crumbs(trail)}
+<div class="offer-hero"><img class="art" src="{img}" alt="" width="200" height="200"><div class="txt"><p class="kicker gray">{kicker}</p><h1>{h1}</h1><p class="tagline">{tagline}</p><p class="lead">{lead}</p>
+<div class="btns"><a class="btn" href="/contact/">Premier échange offert {ic("arrow")}</a><a class="btn ghost" href="#{how}">Comment ça se passe</a></div></div></div></div></section>
 <nav class="toc" aria-label="Sur cette page"><div class="wrap"><ul><li class="toc-label">Sur cette page :</li>{t}</ul></div></nav>
 '''
 
-def others(current):
-    items = "".join(f'<a class="mini-offer" href="/accompagnements/{s}/"><img src="{img}" alt="" width="72" height="72"><span><b>{t}</b><span>{d}</span></span></a>' for s,t,img,d in OFFERS if s != current)
-    return sec("autres", f'<div class="others">{items}</div>', cls="alt", kicker="Pour aller plus loin", h2="Les autres accompagnements")
+def mini_offer(o):
+    u,t,img,d = o
+    return f'<a class="mini-offer" href="{u}"><img src="{img}" alt="" width="72" height="72"><span><b>{t}</b><span>{d}</span></span></a>'
+
+def others(items, title="Voir aussi"):
+    return sec("autres", '<div class="others">' + "".join(mini_offer(o) for o in items) + '</div>', cls="alt", h2=title)
