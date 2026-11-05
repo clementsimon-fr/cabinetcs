@@ -1,10 +1,20 @@
 # cabinetcs.fr
 
-Site vitrine du Cabinet CS (Clément Simon, coach professionnel), publié avec GitHub Pages.
+Site du Cabinet CS (Clément Simon, coach professionnel), publié avec GitHub Pages.
 
-- `index.html` : page d'accueil
-- `mentions-legales.html` : mentions légales et confidentialité
-- `assets/` : styles, polices (hébergées localement), logo, portrait
-- `CNAME` : domaine personnalisé `cabinetcs.fr`
+## Structure
 
-Site statique, sans étape de compilation : toute modification poussée sur `main` est publiée.
+- `/` accueil
+- `/accompagnements/` vue d'ensemble, puis `individuel/`, `equipe/`, `dirigeants/`
+- `/a-propos/`, `/contact/`, `/mentions-legales/`
+- `assets/` : `site.css`, `site.js`, police Inter (hébergée localement), logo, portrait, illustrations
+- `entreprises/…` et `mentions-legales.html` : redirections des anciennes adresses
+
+## Modifier le site
+
+Les pages HTML sont générées par `_build/pages.py` (contenu) et `_build/sitelib.py`
+(en-tête, menu, pied de page, composants). Après modification :
+
+    cd _build && python3 pages.py
+
+Le dossier `_build` commence par « _ », il n'est donc pas publié par GitHub Pages.
