@@ -63,8 +63,8 @@ def header(active):
     <nav id="nav" class="nav" aria-label="Menu principal">
       <ul>
         <li><a href="/"{cur("home")}>Accueil</a></li>
-        <li class="has-sub"><a href="/organisations/"{cur("org")}{org_cls}>Organisations {ic("chev","ic chev")}</a>
-          <ul class="sub">{sub}<li><a class="all" href="/organisations/">Travailler avec votre organisation</a></li></ul>
+        <li class="has-sub"><button type="button" class="nav-parent{" in-section" if org_cls else ""}" aria-haspopup="true">Organisations {ic("chev","ic chev")}</button>
+          <ul class="sub">{sub}</ul>
         </li>
         <li><a href="{DIR[0]}"{cur("dir")}>Dirigeants &amp; entrepreneurs</a></li>
         <li><a href="/a-propos/"{cur("about")}>À propos</a></li>
@@ -83,7 +83,7 @@ def footer():
         <a class="brand" href="/"><img src="/assets/logo.png" alt="" width="42" height="42"><span><b>Cabinet CS</b><small>Clément Simon · Coach professionnel certifié</small></span></a>
         <p>Coaching des managers et des équipes pour les organisations. Espace de ressourcement pour les dirigeants et entrepreneurs. Au cabinet à Bourgoin-Jallieu, en visio ou dans vos locaux.</p>
       </div>
-      <nav aria-label="Accompagnements"><h2>Accompagnements</h2><ul><li><a href="/organisations/">Organisations</a></li><li><a href="{ORG_IND[0]}">· Coaching individuel</a></li><li><a href="{ORG_COL[0]}">· Coaching collectif</a></li><li><a href="{DIR[0]}">Dirigeants &amp; entrepreneurs</a></li></ul></nav>
+      <nav aria-label="Accompagnements"><h2>Accompagnements</h2><ul><li><a href="{ORG_IND[0]}">Coaching individuel</a></li><li><a href="{ORG_COL[0]}">Coaching collectif</a></li><li><a href="{DIR[0]}">Sous l’Olivier, dirigeants &amp; entrepreneurs</a></li></ul></nav>
       <div><h2>Contact</h2><ul><li><a href="mailto:{MAIL}">{MAIL}</a></li><li><a href="tel:{TELH}">{TEL}</a></li><li>Bourgoin-Jallieu (38)</li><li><a href="/contact/">Prendre rendez-vous</a></li></ul></div>
     </div>
     <div class="ft-bottom"><span>© Cabinet CS · Clément Simon</span><span><a href="/a-propos/">À propos</a> · <a href="/mentions-legales/">Mentions légales</a></span></div>
@@ -189,7 +189,7 @@ def crumbs(items):
     out = '<nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a>'
     for i,(label,url) in enumerate(items):
         out += '<span aria-hidden="true">›</span>'
-        out += f'<a href="{url}">{label}</a>' if url else f'<span aria-current="page">{label}</span>'
+        out += f'<a href="{url}">{label}</a>' if url else (f'<span>{label}</span>' if url == "" else f'<span aria-current="page">{label}</span>')
     return out + '</nav>'
 
 def offer_hero(trail, img, kicker, h1, tagline, lead, toc, how="concretement"):
@@ -198,7 +198,6 @@ def offer_hero(trail, img, kicker, h1, tagline, lead, toc, how="concretement"):
 {crumbs(trail)}
 <div class="offer-hero"><img class="art" src="{img}" alt="" width="200" height="200"><div class="txt"><p class="kicker gray">{kicker}</p><h1>{h1}</h1><p class="tagline">{tagline}</p><p class="lead">{lead}</p>
 <div class="btns"><a class="btn" href="/contact/">Premier échange offert {ic("arrow")}</a><a class="btn ghost" href="#{how}">Comment ça se passe</a></div></div></div></div></section>
-<nav class="toc" aria-label="Sur cette page"><div class="wrap"><ul><li class="toc-label">Sur cette page :</li>{t}</ul></div></nav>
 '''
 
 def mini_offer(o):

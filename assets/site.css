@@ -459,3 +459,13 @@ strong{color:var(--ink);font-weight:600}
 .hdr{gap:16px}
 @media (max-width:1240px) and (min-width:1101px){.brand small{display:none}.nav>ul>li>a{padding:9px 10px;font-size:15px}.nav-cta{margin-left:4px}}
 .brand span{white-space:nowrap}
+/* Bouton « Organisations » du menu (ouvre le sous-menu) */
+.nav-parent{font:inherit;font-weight:500;font-size:15.5px;color:var(--ink);background:none;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:10px 12px;border-radius:999px;white-space:nowrap}
+.nav-parent:hover,.has-sub:focus-within .nav-parent{background:var(--bg-alt)}
+.nav-parent.in-section{color:var(--accent-text);background:var(--accent-pale)}
+@media (max-width:1240px) and (min-width:1101px){.nav-parent{padding:9px 10px;font-size:15px}}
+@media (max-width:1100px){.nav-parent{display:flex;width:100%;padding:13px 14px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:default}.nav-parent:hover{background:none}}
+/* Boutons des deux portes d'entrée */
+.door-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+#offres{padding-top:72px}
+.nav .sub a,.nav .sub a span{white-space:normal}
