@@ -123,7 +123,7 @@ blason = f'''<div class="blason">
 <div class="env e-id"><p class="env-title">Identité du leader</p><p class="env-sub" style="margin:0"><i>Ici et maintenant</i></p><div class="bl-col">{comps(idt[1],idt[2])}</div></div>
 <div class="env e-bus"><p class="env-title">Enjeux business</p><div class="bl-col">{comps(bus[1],bus[2])}</div></div></div>
 <p class="bl-foot"><span>← Relationnel</span><span>Opérationnel →</span></p></div>
-<p class="bl-legend"><span><i style="background:#c94444"></i><b>Instantané</b> · ici et maintenant</span><span><i style="background:#8a63b8"></i><b>Court terme</b> · relations et équipes</span><span><i style="background:#d98c26"></i><b>Moyen terme</b> · opérations et résultats</span><span><i style="background:#3b7dc4"></i><b>Long terme</b> · vision et organisation</span></p>
+<p class="bl-legend"><span><i style="background:#c94444"></i><b>Instantané</b> · ici et maintenant</span><span><i style="background:#8a63b8"></i><b>Court terme</b> · relations et équipes</span><span><i style="background:#b8944a"></i><b>Moyen terme</b> · opérations et résultats</span><span><i style="background:#3b7dc4"></i><b>Long terme</b> · vision et organisation</span></p>
 <div class="bl-detail" hidden aria-live="polite"><small></small><b></b><p></p></div>
 </div>'''
 cats = [("Le rapport à soi","Confiance, légitimité, alignement"),("Le rapport aux autres","Communication, leadership, gestion des tensions"),("La vision","Clarifier ses priorités, donner du sens à ses actions"),("Les difficultés","Blocages, surcharge, décisions complexes"),("La posture","Trouver sa place, assumer son rôle"),("L’équilibre","Articuler vie professionnelle et vie personnelle")]
