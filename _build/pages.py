@@ -71,10 +71,10 @@ def door(img, kicker, title, text, buttons):
 home = f'''<section class="hero"><div class="wrap home-hero">
   <div class="txt">
     <p class="kicker">Coach professionnel certifié · Bourgoin-Jallieu</p>
-    <h1>Prendre du recul sur votre situation professionnelle et faire un pas en avant</h1>
-    <p class="lead">J’accompagne les organisations, leurs managers et leurs équipes, ainsi que les dirigeants et les entrepreneurs qui ont besoin d’un espace pour penser et décider avec clarté.</p>
+    <h1>Prendre du recul sur votre situation et faire un pas en avant</h1>
+    <p class="lead">J’accompagne les organisations, leurs managers et leurs équipes, les dirigeants et les entrepreneurs, et toute personne qui a besoin d’un temps d’écoute pour y voir plus clair.</p>
     <div class="btns"><a class="btn" href="/contact/">Prendre rendez-vous {ic("arrow")}</a><a class="btn ghost" href="#offres">Voir les accompagnements</a></div>
-    <p class="facts"><span>{ic("clock")}Rendez-vous découverte de 30 min offert</span><span>{ic("pin")}Au cabinet, en visio ou dans vos locaux</span></p>
+    <p class="facts"><span>{ic("clock")}Première séance de 30 min à 20 €</span><span>{ic("pin")}Au cabinet, en visio ou dans vos locaux</span></p>
   </div>
   <figure class="portrait"><img src="/assets/portrait.jpg" alt="Portrait de Clément Simon" width="640" height="804"><figcaption><b>Clément Simon</b>Coach professionnel certifié, fondateur du Cabinet CS</figcaption></figure>
 </div></section>
@@ -83,9 +83,11 @@ doors = '<div class="doors2">' + door("/assets/img/equipe.jpg", "Pour les organi
   "Entreprises, associations, collectivités : vous souhaitez accompagner une personne ou un collectif. Les objectifs sont définis avec vous, dans un contrat à trois.",
   [(ORG_IND[0], "Coaching individuel"), (ORG_COL[0], "Coaching collectif")]) + door("/assets/img/olivier.jpg", "Pour les dirigeants et entrepreneurs", "Prendre du recul sur votre rôle de dirigeant",
   "Dirigeant, fondateur, indépendant ou associé : vous venez pour vous-même. Un espace confidentiel pour déposer la charge, prendre du recul et décider avec clarté.",
-  [(DIR[0], "Espace de ressourcement Sous l’Olivier")]) + '</div>'
+  [(DIR[0], "Espace de ressourcement Sous l’Olivier")]) + door(ECOUTE[2], "Pour tous, à titre personnel", "Comment ça va ?",
+  "Un temps d’écoute sincère, inspiré de la Communication NonViolente, pour partager une situation qui vous préoccupe, professionnelle ou personnelle.",
+  [(ECOUTE[0], "Découvrir le temps d’écoute")]) + '</div>'
 home += sec("offres", doors)
-home += sec("demarche", '''<ol class="steps"><li><h3>Rendez-vous découverte</h3><p>30 minutes offertes, en visio ou en présentiel, pour clarifier votre situation et votre besoin.</p></li><li><h3>Contrat d’accompagnement</h3><p>Objectifs, rythme et lieu définis ensemble. Quand une organisation prescrit, un contrat à trois précise ce qui reste confidentiel.</p></li><li><h3>Ponctuel ou sur la durée</h3><p>Une ou quelques séances sur une question précise, ou un accompagnement de 3, 6 ou 9 mois avec des bilans réguliers.</p></li></ol>''' + duo("Le coach","expert du processus","Alliance et confiance","Vous","expert de votre situation") + '<div style="margin-top:24px">' + tags(ENGAGEMENTS, True) + '</div>', cls="alt", kicker="Ma façon de travailler", h2="Un cadre clair, une démarche simple")
+home += sec("demarche", '''<ol class="steps"><li><h3>Rendez-vous découverte</h3><p>30 minutes, à 20 €, en visio ou en présentiel, pour clarifier votre situation et votre besoin.</p></li><li><h3>Contrat d’accompagnement</h3><p>Objectifs, rythme et lieu définis ensemble. Quand une organisation prescrit, un contrat à trois précise ce qui reste confidentiel.</p></li><li><h3>Ponctuel ou sur la durée</h3><p>Une ou quelques séances sur une question précise, ou un accompagnement de 3, 6 ou 9 mois avec des bilans réguliers.</p></li></ol>''' + duo("Le coach","expert du processus","Alliance et confiance","Vous","expert de votre situation") + '<div style="margin-top:24px">' + tags(ENGAGEMENTS, True) + '</div>', cls="alt", kicker="Ma façon de travailler", h2="Un cadre clair, une démarche simple")
 home += sec("qui", f'''<div class="teaser"><img src="/assets/portrait.jpg" alt="" width="200" height="200"><div class="t"><p class="kicker">Qui je suis</p><h2 id="h-qui">Clément Simon</h2><p>Ingénieur de formation, je suis devenu coach professionnel parce que ce qui m’a toujours intéressé, c’est ce qui se joue entre les personnes quand une situation devient difficile. Certifié par l’école JBS Coaching, dans la culture Coach &amp; Team.</p><p><a class="link-arrow" href="/a-propos/">Mon parcours et ma pratique {ic("arrow")}</a></p></div></div>''')
 faq = [("Coaching ou thérapie : quelle différence ?","La thérapie prend soin d’une souffrance psychique et explore souvent le passé. Le coaching part de votre situation actuelle et de ce que vous voulez faire avancer. Si votre besoin relève d’un soin, je vous oriente vers un professionnel de santé."),
 ("Combien de séances faut-il ?","Deux formats sont possibles. <strong>Ponctuel</strong> : une ou quelques séances pour avancer sur une question précise. <strong>Sur la durée</strong> : un accompagnement de 3, 6 ou 9 mois, avec des séances d’1 h 30 toutes les 2 à 4 semaines et un bilan toutes les 4 à 6 séances. Le rendez-vous découverte permet de choisir ensemble."),
@@ -177,8 +179,29 @@ d += sec("situations", DISCLAIMER + situations(SIT_DIR, cols=2), h2="Situations 
 d += sec("blason", f'''<details class="space"><summary><span class="chip-ic">{ic("book")}</span><span><b>En complément : l’espace de transmission</b><span>Des repères conceptuels pour enrichir votre pratique de dirigeant</span></span></summary>
 <div class="space-body"><p>Un temps pédagogique, en complément du ressourcement, qui s’appuie sur le <strong>Blason du Leadership Intégral</strong> : une cartographie de <strong>16 compétences clés</strong> du dirigeant réparties sur 4 axes. Les apports sont courts et mis en pratique tout de suite dans votre contexte.</p>
 <div><p class="hint" style="margin-bottom:14px">{ic("info")}Touchez une compétence pour découvrir son détail.</p>{blason}</div></div></details>''', cls="alt", narrow=True)
-d += others([ORG_IND, ORG_COL], title="Vous êtes une organisation ?") + cta_band(title="Échangeons sur vos enjeux", text="Un premier échange confidentiel de 30 minutes, offert, pour comprendre votre situation. Sans engagement.")
+d += others([ORG_IND, ORG_COL], title="Vous êtes une organisation ?") + cta_band(title="Échangeons sur vos enjeux", text="Une première séance confidentielle de 30 minutes, à 20 €, pour comprendre votre situation. Sans engagement pour la suite.")
 page(DIR[0], "Dirigeants & entrepreneurs · Sous l’Olivier · Cabinet CS", "Sous l’Olivier : un espace de ressourcement pour les dirigeants, fondateurs, indépendants et associés. Cabinet CS, Clément Simon, coach certifié à Bourgoin-Jallieu.", "dir", d)
+
+# ================================================================ COMMENT ÇA VA ?
+cv = offer_hero([("Comment ça va ?",None)], ECOUTE[2], "Pour tous, à titre personnel ou professionnel", "Comment ça va ?", "Un temps d’écoute sincère pour déposer ce qui vous préoccupe", "Parfois, ce qui pèse n’est pas un objectif à atteindre, mais une situation qu’on a besoin de partager. Un espace pour être écouté, sans jugement et sans conseil, et y voir plus clair.", [], how="deroule")
+cv += sec("intention", '<div class="prose"><p>« Comment ça va ? » : la question est simple, mais on prend rarement le temps d’y répondre vraiment. Ce temps d’écoute est fait pour ça.</p><p>Il s’inspire de la <strong>Communication NonViolente</strong> (CNV) : une écoute attentive, qui vous aide à mettre des mots sur ce que vous vivez, à comprendre ce qui se joue pour vous et à identifier ce dont vous avez besoin. Je ne vous donne pas de conseils et je ne juge pas : je vous accompagne pour que vous trouviez votre propre chemin.</p><p class="pull">« Être entendu, c’est déjà commencer à y voir plus clair. »</p></div>', cls="alt", h2="L’intention", center=False, narrow=True)
+cv += sec("situations", '<div class="themes">' + "".join(f'<div class="card"><span class="chip-ic">{ic(i)}</span><h3>{t}</h3><p>{x}</p></div>' for i,t,x in [
+ ("users","Une tension avec quelqu’un","Un proche, un collègue, un associé : une relation qui vous pèse."),
+ ("compass","Un changement de vie","Une séparation, un déménagement, une naissance, un départ."),
+ ("flag","Une décision personnelle","Un choix qui vous travaille et que vous n’arrivez pas à trancher."),
+ ("zap","Une période chargée","Le sentiment d’être dépassé, de ne plus savoir par où commencer."),
+ ("heart","Un événement qui vous a touché","Quelque chose qui vous reste en tête et que vous avez besoin de déposer."),
+ ("msg","Le besoin d’être entendu","Simplement parler à quelqu’un de neutre, en dehors de votre entourage.")]) + '</div>', kicker="Pour quelles situations", h2="Ce que vous pouvez y déposer", sub="Une situation professionnelle ou personnelle : c’est vous qui choisissez de quoi vous parlez.")
+cv += sec("deroule", '<ol class="steps four">' + "".join(f'<li><h3>{t}</h3><p>{x}</p></li>' for t,x in [
+ ("Ce qui se passe","Vous racontez la situation. Nous distinguons les faits de ce que vous en pensez."),
+ ("Ce que vous ressentez","Vous mettez des mots sur vos émotions, sans les juger."),
+ ("Ce dont vous avez besoin","Derrière chaque émotion, un besoin : nous cherchons ensemble lequel."),
+ ("Ce qui peut vous aider","Si vous le souhaitez, vous repartez avec une piste concrète, pour vous ou pour échanger avec l’autre.")]) + '</ol><div style="margin-top:28px">' + tags(["Confidentialité totale","Écoute sans jugement","Pas de conseil non demandé","Respect de votre rythme"], True) + '</div>', cls="alt", kicker="Comment ça se passe", h2="Une écoute inspirée de la CNV", sub="Quatre temps pour passer de ce qui vous préoccupe à ce dont vous avez besoin.")
+cv += sec("format", fmt([("clock","45 minutes à 1 heure","Au cabinet à Bourgoin-Jallieu ou en visio"),("star","Première séance à 20 €","Pour faire connaissance et voir si ce temps vous convient"),("zap","Ponctuel","Une séance quand vous en ressentez le besoin"),("compass","Régulier","Des rendez-vous à un rythme que nous fixons ensemble")]) +
+ f'<div class="note" style="margin-top:20px"><b>Ce que ce n’est pas</b> : ni une thérapie, ni un suivi psychologique, ni du conseil. Si votre situation relève d’un soin, je vous oriente vers un professionnel de santé. En cas de détresse ou d’idées suicidaires, appelez le <a href="tel:3114"><b>3114</b></a> (numéro national de prévention du suicide, gratuit, 24 h/24).</div>', kicker="Format", h2="Simple et sans engagement", narrow=True)
+cv += sec("organisations", f'<div class="card row"><span class="chip-ic">{ic("building")}</span><div><h3>Proposer des temps d’écoute à vos salariés</h3><p>Ponctuels ou réguliers, dans vos locaux ou en visio, pour offrir à vos équipes un espace neutre où déposer ce qui les préoccupe. Ce qui est dit reste confidentiel : rien n’est rapporté à l’employeur.</p><p style="margin-top:10px"><a class="link-arrow" href="/contact/">En parler ensemble {ic("arrow")}</a></p></div></div>', cls="alt", kicker="Vous êtes une organisation ?", h2="Un temps d’écoute pour vos équipes", narrow=True)
+cv += others([DIR, ORG_IND], title="Pour aller plus loin") + cta_band(title="Comment ça va ?", text="Une première séance de 45 minutes à 1 heure, à 20 €, au cabinet ou en visio. Vous parlez, je vous écoute.")
+page(ECOUTE[0], "Comment ça va ? Un temps d’écoute · Cabinet CS", "Comment ça va ? : un temps d’écoute sincère, inspiré de la Communication NonViolente, pour partager une situation qui vous préoccupe. Bourgoin-Jallieu ou visio, première séance à 20 €.", "ecoute", cv)
 
 # ================================================================ A PROPOS
 ab = f'''<section class="hero"><div class="wrap">{crumbs([("À propos",None)])}
@@ -196,8 +219,8 @@ page("/a-propos/", "À propos · Clément Simon, coach professionnel · Cabinet 
 
 # ================================================================ CONTACT
 ct = f'''<section class="hero"><div class="wrap">{crumbs([("Contact",None)])}
-<div class="contact-grid"><div class="prose"><p class="kicker">Contact</p><h1>Un premier temps pour faire connaissance</h1><p class="lead">Écrivez-moi ou appelez-moi pour convenir d’un rendez-vous découverte de 30 minutes, offert.</p>
-<div class="grid2"><div class="card"><span class="chip-ic">{ic("building")}</span><h3>Vous êtes une organisation</h3><p>Un premier échange pour comprendre votre besoin et construire ensemble le cadre de l’accompagnement.</p></div><div class="card"><span class="chip-ic">{ic("tree")}</span><h3>Vous êtes dirigeant ou entrepreneur</h3><p>Un rendez-vous découverte pour travailler un sujet réel de votre activité et voir si la démarche vous convient.</p></div></div></div>
+<div class="contact-grid"><div class="prose"><p class="kicker">Contact</p><h1>Un premier temps pour faire connaissance</h1><p class="lead">Écrivez-moi ou appelez-moi pour convenir d’une première séance.</p>
+<div class="contact-cards"><div class="card row"><span class="chip-ic">{ic("building")}</span><div><h3>Vous êtes une organisation</h3><p>Un premier échange pour comprendre votre besoin et construire ensemble le cadre de l’accompagnement.</p></div></div><div class="card row"><span class="chip-ic">{ic("tree")}</span><div><h3>Vous êtes dirigeant ou entrepreneur</h3><p>Une première séance de 30 minutes, à 20 €, pour travailler un sujet réel de votre activité et voir si la démarche vous convient.</p></div></div><div class="card row"><span class="chip-ic">{ic("heart")}</span><div><h3>Vous souhaitez un temps d’écoute</h3><p>Une première séance de 45 minutes à 1 heure, à 20 €, pour déposer ce qui vous préoccupe.</p></div></div></div></div>
 <div class="coords">
 <div class="coord"><span class="chip-ic">{ic("mail")}</span><div><small>E-mail</small><a class="v" href="{mailto("Prise de rendez-vous")}">{MAIL}</a></div><button class="copy" type="button" data-copy="{MAIL}">Copier</button></div>
 <div class="coord"><span class="chip-ic">{ic("phone")}</span><div><small>Téléphone</small><a class="v" href="tel:{TELH}">{TEL}</a></div><button class="copy" type="button" data-copy="{TEL}">Copier</button></div>
@@ -205,7 +228,7 @@ ct = f'''<section class="hero"><div class="wrap">{crumbs([("Contact",None)])}
 <div class="btns" style="margin-top:8px"><a class="btn" href="{mailto("Prise de rendez-vous")}">{ic("mail")}Écrire un e-mail</a><a class="btn ghost" href="tel:{TELH}">{ic("phone")}Appeler</a></div>
 </div></div></div></section>
 '''
-page("/contact/", "Contact et rendez-vous · Cabinet CS", "Prendre rendez-vous avec Clément Simon, coach professionnel à Bourgoin-Jallieu : rendez-vous découverte de 30 minutes offert, en visio ou en présentiel.", "contact", ct)
+page("/contact/", "Contact et rendez-vous · Cabinet CS", "Prendre rendez-vous avec Clément Simon, coach professionnel à Bourgoin-Jallieu : première séance à 20 €, en visio ou en présentiel.", "contact", ct)
 
 # ================================================================ MENTIONS LEGALES
 ml = f'''<section class="section"><div class="wrap narrow legal">{crumbs([("Mentions légales",None)])}
@@ -239,5 +262,5 @@ for old, new in [("/accompagnements/", "/"), ("/accompagnements/individuel/", OR
                  ("/mentions-legales.html", "/mentions-legales/")]:
     redirect(old, new)
 
-open(ROOT + "/sitemap.xml", "w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>https://cabinetcs.fr{u}</loc></url>\n" for u in ["/", ORG_IND[0], ORG_COL[0], DIR[0], "/a-propos/", "/contact/"]) + "</urlset>\n")
+open(ROOT + "/sitemap.xml", "w").write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(f"  <url><loc>https://cabinetcs.fr{u}</loc></url>\n" for u in ["/", ORG_IND[0], ORG_COL[0], DIR[0], ECOUTE[0], "/a-propos/", "/contact/"]) + "</urlset>\n")
 print("ok")

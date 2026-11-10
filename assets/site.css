@@ -59,7 +59,7 @@ strong{color:var(--ink);font-weight:600}
 .menu-btn .i-close{display:none}
 .menu-btn[aria-expanded="true"] .i-open{display:none}
 .menu-btn[aria-expanded="true"] .i-close{display:block}
-@media (max-width:1100px){
+@media (max-width:1180px){
   .menu-btn{display:inline-flex}
   .nav{display:none;position:absolute;left:0;right:0;top:100%;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 20px 30px -20px rgba(20,36,61,.3);max-height:calc(100vh - 72px);overflow:auto}
   .nav.open{display:block}
@@ -457,15 +457,24 @@ strong{color:var(--ink);font-weight:600}
 .nav a,.nav .btn{white-space:nowrap}
 .nav>ul>li>a{padding:10px 12px}
 .hdr{gap:16px}
-@media (max-width:1240px) and (min-width:1101px){.brand small{display:none}.nav>ul>li>a{padding:9px 10px;font-size:15px}.nav-cta{margin-left:4px}}
+@media (max-width:1340px) and (min-width:1181px){.brand small{display:none}.nav>ul>li>a{padding:9px 10px;font-size:15px}.nav-cta{margin-left:4px}}
 .brand span{white-space:nowrap}
 /* Bouton « Organisations » du menu (ouvre le sous-menu) */
 .nav-parent{font:inherit;font-weight:500;font-size:15.5px;color:var(--ink);background:none;border:0;cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:10px 12px;border-radius:999px;white-space:nowrap}
 .nav-parent:hover,.has-sub:focus-within .nav-parent{background:var(--bg-alt)}
 .nav-parent.in-section{color:var(--accent-text);background:var(--accent-pale)}
-@media (max-width:1240px) and (min-width:1101px){.nav-parent{padding:9px 10px;font-size:15px}}
-@media (max-width:1100px){.nav-parent{display:flex;width:100%;padding:13px 14px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:default}.nav-parent:hover{background:none}}
+@media (max-width:1340px) and (min-width:1181px){.nav-parent{padding:9px 10px;font-size:15px}}
+@media (max-width:1180px){.nav-parent{display:flex;width:100%;padding:13px 14px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);cursor:default}.nav-parent:hover{background:none}}
 /* Boutons des deux portes d'entrée */
 .door-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
 #offres{padding-top:72px}
 .nav .sub a,.nav .sub a span{white-space:normal}
+
+/* Offre « Comment ça va ? » et trois portes d'entrée */
+.doors2{grid-template-columns:repeat(3,minmax(0,1fr))}
+.door2 h3{font-size:21px}
+.door2 .pic img{max-width:100%}
+.steps.four{grid-template-columns:repeat(4,minmax(0,1fr))}
+.contact-cards{display:grid;gap:12px}
+@media (max-width:1000px){.doors2{grid-template-columns:1fr}.door2{grid-template-columns:220px minmax(0,1fr);grid-template-rows:none}.door2 .pic{height:auto}.steps.four{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){.door2{grid-template-columns:1fr}.door2 .pic{height:180px}.steps.four{grid-template-columns:1fr}}

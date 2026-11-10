@@ -46,7 +46,8 @@ def ic(name, cls="ic"):
 ORG_IND = ("/organisations/coaching-individuel/", "Coaching individuel", "/assets/img/collaborateur.jpg", "Un manager, un cadre, un collaborateur")
 ORG_COL = ("/organisations/coaching-collectif/", "Coaching collectif", "/assets/img/equipe.jpg", "Une équipe, un comité de direction, un groupe projet")
 DIR = ("/dirigeants-entrepreneurs/", "Dirigeants & entrepreneurs", "/assets/img/olivier.jpg", "Sous l’Olivier, un espace de ressourcement")
-OFFERS = [ORG_IND, ORG_COL, DIR]
+ECOUTE = ("/comment-ca-va/", "Comment ça va ?", "/assets/img/ecoute.svg", "Un temps d’écoute, inspiré de la CNV")
+OFFERS = [ORG_IND, ORG_COL, DIR, ECOUTE]
 
 def mailto(subject):
     return f"mailto:{MAIL}?subject={urllib.parse.quote(subject)}"
@@ -67,6 +68,7 @@ def header(active):
           <ul class="sub">{sub}</ul>
         </li>
         <li><a href="{DIR[0]}"{cur("dir")}>Dirigeants &amp; entrepreneurs</a></li>
+        <li><a href="{ECOUTE[0]}"{cur("ecoute")}>Comment ça va ?</a></li>
         <li><a href="/a-propos/"{cur("about")}>À propos</a></li>
         <li><a href="/contact/"{cur("contact")}>Contact</a></li>
         <li class="nav-cta"><a class="btn sm" href="/contact/">Prendre rendez-vous</a></li>
@@ -81,9 +83,9 @@ def footer():
     <div class="ft">
       <div>
         <a class="brand" href="/"><img src="/assets/logo.png" alt="" width="42" height="42"><span><b>Cabinet CS</b><small>Clément Simon · Coach professionnel certifié</small></span></a>
-        <p>Coaching des managers et des équipes pour les organisations. Espace de ressourcement pour les dirigeants et entrepreneurs. Au cabinet à Bourgoin-Jallieu, en visio ou dans vos locaux.</p>
+        <p>Coaching des managers et des équipes pour les organisations. Espace de ressourcement pour les dirigeants et entrepreneurs. Temps d’écoute pour tous. Au cabinet à Bourgoin-Jallieu, en visio ou dans vos locaux.</p>
       </div>
-      <nav aria-label="Accompagnements"><h2>Accompagnements</h2><ul><li><a href="{ORG_IND[0]}">Coaching individuel</a></li><li><a href="{ORG_COL[0]}">Coaching collectif</a></li><li><a href="{DIR[0]}">Sous l’Olivier, dirigeants &amp; entrepreneurs</a></li></ul></nav>
+      <nav aria-label="Accompagnements"><h2>Accompagnements</h2><ul><li><a href="{ORG_IND[0]}">Coaching individuel</a></li><li><a href="{ORG_COL[0]}">Coaching collectif</a></li><li><a href="{DIR[0]}">Sous l’Olivier, dirigeants &amp; entrepreneurs</a></li><li><a href="{ECOUTE[0]}">Comment ça va ?</a></li></ul></nav>
       <div><h2>Contact</h2><ul><li><a href="mailto:{MAIL}">{MAIL}</a></li><li><a href="tel:{TELH}">{TEL}</a></li><li>Bourgoin-Jallieu (38)</li><li><a href="/contact/">Prendre rendez-vous</a></li></ul></div>
     </div>
     <div class="ft-bottom"><span>© Cabinet CS · Clément Simon</span><span><a href="/a-propos/">À propos</a> · <a href="/mentions-legales/">Mentions légales</a></span></div>
@@ -143,7 +145,7 @@ def sec(id_, inner, cls="", kicker="", h2="", sub="", center=True, narrow=False)
     w = "wrap narrow" if narrow else "wrap"
     return f'<section id="{id_}" class="section {cls}"{lab}><div class="{w}">{head}{inner}</div></section>\n'
 
-def cta_band(title="Envie d’en parler ?", text="Un rendez-vous découverte de 30 minutes, offert, en visio ou en présentiel, pour clarifier votre situation. Sans engagement.", subject="Prise de rendez-vous"):
+def cta_band(title="Envie d’en parler ?", text="Une première séance de 30 minutes, à 20 €, en visio ou en présentiel, pour clarifier votre situation. Sans engagement pour la suite.", subject="Prise de rendez-vous"):
     return f'''<section class="cta-band" aria-labelledby="h-cta"><div class="wrap inner">{ic("heart","ic big")}<h2 id="h-cta">{title}</h2><p class="lead">{text}</p>
 <div class="btns"><a class="btn" href="/contact/">Prendre rendez-vous {ic("arrow")}</a><a class="btn ghost" href="tel:{TELH}">{ic("phone")}{TEL}</a></div></div></section>\n'''
 
@@ -167,7 +169,7 @@ DISCLAIMER = '<p class="disclaimer">Des exemples illustratifs, inspirés de dema
 
 def discovery(note):
     v = "".join(f'<div><span class="L">{a}</span><b>{b}</b><p>{c}</p></div>' for a,b,c in [("V","Vision","Où souhaitez-vous aller ? Quel est votre horizon ?"),("S","Sens","Pourquoi est-ce important pour vous aujourd’hui ?"),("B","Besoin","De quoi avez-vous besoin concrètement ?")])
-    return f'''<div class="phase"><div class="phase-head"><span class="num">1</span><div><h3>Rendez-vous découverte</h3><p class="meta-line"><span class="free">{ic("clock")}Offert · 30 min</span><span>{ic("video")}En visio</span><span>{ic("pin")}ou en présentiel</span></p></div></div>
+    return f'''<div class="phase"><div class="phase-head"><span class="num">1</span><div><h3>Rendez-vous découverte</h3><p class="meta-line"><span class="free">{ic("clock")}30 min · 20 €</span><span>{ic("video")}En visio</span><span>{ic("pin")}ou en présentiel</span></p></div></div>
 <div class="vsb">{v}</div><p class="phase-note">{note}</p></div>'''
 
 def flow(label):
@@ -197,7 +199,7 @@ def offer_hero(trail, img, kicker, h1, tagline, lead, toc, how="concretement"):
     return f'''<section class="hero"><div class="wrap">
 {crumbs(trail)}
 <div class="offer-hero"><img class="art" src="{img}" alt="" width="200" height="200"><div class="txt"><p class="kicker gray">{kicker}</p><h1>{h1}</h1><p class="tagline">{tagline}</p><p class="lead">{lead}</p>
-<div class="btns"><a class="btn" href="/contact/">Premier échange offert {ic("arrow")}</a><a class="btn ghost" href="#{how}">Comment ça se passe</a></div></div></div></div></section>
+<div class="btns"><a class="btn" href="/contact/">Prendre rendez-vous {ic("arrow")}</a><a class="btn ghost" href="#{how}">Comment ça se passe</a></div></div></div></div></section>
 '''
 
 def mini_offer(o):

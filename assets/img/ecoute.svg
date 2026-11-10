@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Deux bulles de dialogue et un cœur">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#faf6ee"/>
+      <stop offset="1" stop-color="#efe6d3"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="240" rx="28" fill="url(#bg)"/>
+  <circle cx="190" cy="52" r="26" fill="#b8944a" opacity=".18"/>
+  <circle cx="44" cy="196" r="34" fill="#1a2b3c" opacity=".06"/>
+  <!-- bulle de la personne qui parle -->
+  <path d="M40 62h104a18 18 0 0 1 18 18v44a18 18 0 0 1-18 18H86l-24 20v-20H40a18 18 0 0 1-18-18V80a18 18 0 0 1 18-18z" fill="#1a2b3c"/>
+  <path d="M48 92h80M48 110h56" stroke="#c3cdd8" stroke-width="7" stroke-linecap="round"/>
+  <!-- bulle de l'écoute -->
+  <path d="M112 118h88a16 16 0 0 1 16 16v38a16 16 0 0 1-16 16h-14v18l-22-18h-52a16 16 0 0 1-16-16v-38a16 16 0 0 1 16-16z" fill="#b8944a"/>
+  <path d="M156 175s-20-11.5-20-25a10.5 10.5 0 0 1 20-4.6 10.5 10.5 0 0 1 20 4.6c0 13.5-20 25-20 25z" fill="#fff"/>
+</svg>
